@@ -1,0 +1,2118 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ABB.SrcML</name>
+    </assembly>
+    <members>
+        <member name="T:ABB.SrcML.AbstractDocument">
+            <summary>
+            Provides base functionality for various srcML documents.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.AbstractDocument.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.AbstractDocument"/> class.
+            </summary>
+            <param name="fileName">Name of the file.</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractDocument.#ctor(ABB.SrcML.AbstractDocument)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.AbstractDocument"/> class based on <paramref name="other"/>.
+            </summary>
+            <param name="other">The other <see cref="T:ABB.SrcML.AbstractDocument"/> object to copy</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractDocument.WriteXmlnsAttributes(System.Xml.XmlWriter)">
+            <summary>
+            Write attribute strings for each SrcML namespace to the given XmlWriter. This should be called immediately after XmlWriter.WriteStartElement.
+            </summary>
+            <param name="writer">Instance of XmlWriter to write to.</param>
+        </member>
+        <member name="M:ABB.SrcML.AbstractDocument.getRootAttributes(System.String)">
+            <summary>
+            Gets the root attributes.
+            </summary>
+            <param name="xmlFilePath">The XML file path.</param>
+            <returns>the attributes attached to the root element.</returns>
+        </member>
+        <member name="P:ABB.SrcML.AbstractDocument.FileName">
+            <summary>
+            Gets the filename underlying this SrcMLFile.
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.AbstractDocument.RootAttributeDictionary">
+            <summary>
+            Returns the attribute dictionary 
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.AbstractDocument.NumberOfNestedFileUnits">
+            <summary>
+            Gets the number of nested file units.
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.AbstractDocument.FileUnits">
+            <summary>
+            Get all units that have the "filename" attribute. This uses the <see cref="M:ABB.SrcML.XmlHelper.StreamElements(System.String,System.Xml.Linq.XName,System.Int32)"/> function for low memory overhead,
+            unless the document is not compound (and the root unit is the only file unit). In that case, it uses <see cref="M:System.Xml.Linq.XElement.Load(System.String)"/>.
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.Extensions">
+            <summary>
+            Extensions for working with SrcML documents
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.Extensions.GetXPath(System.Xml.Linq.XElement)">
+            <summary>
+            Gets the X path that uniquely identifies the given XElement relative to to the containing file unit.
+            </summary>
+            <param name="element">The element.</param>
+            <returns>An XPath query that uniquely identifies <paramref name="element"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.Extensions.GetXPath(System.Xml.Linq.XElement,System.Boolean)">
+            <summary>
+            Gets an XPath query that uniquely identifies the given XElement
+            </summary>
+            <param name="element">The element to create an XPath query for</param>
+            <param name="relativeToFileUnit">whether or not the XPath query is relative to the parent file unit or not</param>
+            <returns>An XPath query that uniquely identifies <paramref name="element"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.Extensions.ParentStatement(System.Xml.Linq.XNode)">
+            <summary>
+            Returns the parent statement (either expr_stmt, or decl_stmt) of the given node.
+            </summary>
+            <param name="node">The node to search from.</param>
+            <returns>the parent element for <paramref name="node"/>. It will be either <see cref="F:ABB.SrcML.SRC.ExpressionStatement"/> or <see cref="F:ABB.SrcML.SRC.DeclarationStatement"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.Extensions.GetXmlLineNumber(System.Xml.Linq.XElement)">
+            <summary>
+            Gets the line number for the given element.
+            </summary>
+            <param name="element">The element</param>
+            <returns>The line number that the given element is found on; -1 if the data is not present</returns>
+        </member>
+        <member name="M:ABB.SrcML.Extensions.GetXmlLinePosition(System.Xml.Linq.XElement)">
+            <summary>
+            Gets the line position for the given element.
+            </summary>
+            <param name="element">The element</param>
+            <returns>The line number that the given element is found on; -1 if the data is not present</returns>
+        </member>
+        <member name="M:ABB.SrcML.Extensions.GetSrcLineNumber(System.Xml.Linq.XElement)">
+            <summary>
+            Gets the line of source code that contains the given element.
+            <para>This differs from <see cref="M:ABB.SrcML.Extensions.GetXmlLineNumber(System.Xml.Linq.XElement)"/> in that this is the number of lines relative
+            to the current <see cref="F:ABB.SrcML.SRC.Unit"/>; this matches to the line number in the original source file.</para>
+            </summary>
+            <param name="element">The element</param>
+            <returns>The line of source code; -1 if that info is not found.</returns>
+        </member>
+        <member name="M:ABB.SrcML.Extensions.GetEndingSrcLineNumber(System.Xml.Linq.XElement)">
+            <summary>
+            Gets the ending source line number.
+            </summary>
+            <param name="element">The element.</param>
+            <returns>the last line number this element occupies</returns>
+        </member>
+        <member name="M:ABB.SrcML.Extensions.GetSrcLinePosition(System.Xml.Linq.XElement)">
+            <summary>
+            Gets the original source column number that the given element starts on.
+            </summary>
+            <param name="element">The element</param>
+            <returns>The column number that this element starts on. This will return 0 if the element is a Unit and -1 if no line information is present.</returns>
+        </member>
+        <member name="M:ABB.SrcML.Extensions.SetLineInfo(System.Xml.Linq.XObject,ABB.SrcML.LineInfo)">
+            <summary>
+            Adds line info to the given XObject.
+            </summary>
+            <param name="xmlObject">the XObject</param>
+            <param name="lineInfo">a LineInfo object. This object is added as an annotation to <paramref name="xmlObject"/></param>
+        </member>
+        <member name="M:ABB.SrcML.Extensions.ToSource(System.Xml.Linq.XElement)">
+            <summary>
+            Converts the tree rooted at the given element to source code.
+            </summary>
+            <param name="element">The element.</param>
+            <returns>The source code in a string</returns>
+        </member>
+        <member name="M:ABB.SrcML.Extensions.ToSource(System.Xml.Linq.XElement,System.Int32)">
+            <summary>
+            Converts the tree rooted at the given element to source code.
+            <para>It optionally converts tab to spaces.</para>
+            </summary>
+            <param name="element">The element to convert.</param>
+            <param name="spacesPerTab">The number of spaces to convert each tab to; if zero, no conversion is done.</param>
+            <returns>The source code in a string.</returns>
+        </member>
+        <member name="M:ABB.SrcML.Extensions.ContainsCallTo(System.Xml.Linq.XContainer,System.String)">
+            <summary>
+            Checks whether the given container contains a call to the specified function.
+            </summary>
+            <param name="container">The container to test.</param>
+            <param name="functionName">The function name to look for.</param>
+            <returns>True if the call exists, false if not.</returns>
+        </member>
+        <member name="M:ABB.SrcML.Extensions.IsDeclOfType(System.Xml.Linq.XElement,System.String)">
+            <summary>
+            Checks whether the element is a declaration statement for a variable of the specified type.
+            </summary>
+            <param name="element">The element to test.</param>
+            <param name="typeName">The typename to look for.</param>
+            <returns>True if this is a declaration for the given type; false if not.</returns>
+        </member>
+        <member name="M:ABB.SrcML.Extensions.GetLocalDecl(System.Xml.Linq.XElement)">
+            <summary>
+            Gets the local declaration corresponding to the given name.
+            </summary>
+            <param name="name">A <see cref="T:ABB.SrcML.SRC"/> element.</param>
+            <returns>The corresponding declaration, null if not found.</returns>
+        </member>
+        <member name="T:ABB.SrcML.ITransform">
+            <summary>
+            Interface for SrcML transformations.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.ITransform.Query(System.Xml.Linq.XElement)">
+            <summary>
+            Find each matching element rooted at the given element.
+            </summary>
+            <param name="element">the rootUnit element</param>
+            <returns>the matching elements</returns>
+        </member>
+        <member name="M:ABB.SrcML.ITransform.Transform(System.Xml.Linq.XElement)">
+            <summary>
+            Transform the given element. Typically, the input for this function should come from <see cref="T:ABB.SrcML.QueryAttribute"/>.
+            <code lang="C#">
+            foreach(var e in transform.QueryAttribute(element))
+                e.ReplaceWith(transform.Transform(e);
+            </code>
+            </summary>
+            <param name="element">the element to transform. Typically comes from <see cref="T:ABB.SrcML.QueryAttribute"/></param>
+            <returns>a transformed version of the </returns>
+        </member>
+        <member name="T:ABB.SrcML.Language">
+            <summary>
+            Enumeration of languages that can be parsed by SrcML.
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.Language.Any">
+            <summary>Indicates that srcML should choose the language based on extension.</summary>
+        </member>
+        <member name="F:ABB.SrcML.Language.CPlusPlus">
+            <summary>Indicates that srcML should use the C++ language.</summary>
+        </member>
+        <member name="F:ABB.SrcML.Language.C">
+            <summary>Indicates that srcML should use the C language.</summary>
+        </member>
+        <member name="F:ABB.SrcML.Language.Java">
+            <summary>Indicates that srcML should use the Java language.</summary>
+        </member>
+        <member name="F:ABB.SrcML.Language.AspectJ">
+            <summary>Indicates that srcML should use the Aspect-J language.</summary>
+        </member>
+        <member name="T:ABB.SrcML.LineInfo">
+            <summary>
+            Class for storing line information for an XNode. LineInfo objects are typically added as annotations to XElements.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.LineInfo.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Create a new LineInfo object with the given line number and position.
+            </summary>
+            <param name="lineNumber">the line number</param>
+            <param name="position">the column number</param>
+        </member>
+        <member name="P:ABB.SrcML.LineInfo.LineNumber">
+            <summary>
+            Line number property. The line in the Xml document that the element appears on.
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.LineInfo.Position">
+            <summary>
+            Line position property. The character position in the Xml document that the element appears on.
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.CPP">
+            <summary>
+            SrcML Namespace for C pre-preprocessor directives.
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.CPP.Prefix">
+            <summary>
+            XMLNS prefix for the SrcML CPP namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.CPP.NS">
+            <summary>
+            XNamespace for the SrcML CPP XML namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.CPP.Directive">
+            <summary>
+            Each CPP Directive is surrounded by 
+            
+            #include &lt;windows.h&gt; becomes:
+            
+            &lt;cpp:include&gt;#&lt;cpp:directive&gt;include&lt;/cpp:directive&gt; &lt;cpp:file&gt;&lt;jni.h&gt;&lt;/cpp:file&gt;&lt;/cpp:include&gt;
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.CPP.File">
+            <summary>
+            References to files in CPP directives are surrounded by the File element:
+            
+            #include &lt;windows.h&gt; becomes:
+            
+            &lt;cpp:include&gt;#&lt;cpp:directive&gt;include&lt;/cpp:directive&gt; &lt;cpp:file&gt;&lt;jni.h&gt;&lt;/cpp:file&gt;&lt;/cpp:include&gt;
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.CPP.Include">
+            <summary>
+            markup for #include:
+            
+            #include &lt;windows.h&gt; becomes:
+            
+            &lt;cpp:include&gt;#&lt;cpp:directive&gt;include&lt;/cpp:directive&gt; &lt;cpp:file&gt;&lt;jni.h&gt;&lt;/cpp:file&gt;&lt;/cpp:include&gt;
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.CPP.Define">
+            <summary>
+            markup for #define macro
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.CPP.Undef">
+            <summary>
+            markup for #undef macro
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.CPP.If">
+            <summary>
+            markup for #if macro
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.CPP.Then">
+            <summary>
+            markup for the "then" portion of the #if/#else macro set
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.CPP.Else">
+            <summary>
+            markup for #else tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.CPP.Endif">
+            <summary>
+            #endif becomes:
+            
+            &lt;cpp:endif&gt;#&lt;cpp:directive&gt;endif&lt;/cpp:directive&gt;&lt;/cpp:endif&gt;
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.CPP.Elif">
+            <summary>
+            markup for the elif tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.CPP.Ifdef">
+            <summary>
+            #ifdef __cplusplus becomes:
+            
+            &lt;cpp:ifdef&gt;#&lt;cpp:directive&gt;ifdef&lt;/cpp:directive&gt; &lt;name&gt;__cplusplus&lt;/name&gt;&lt;/cpp:ifdef&gt;
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.CPP.Ifndef">
+            <summary>
+            markup for the #ifndef macro
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.CPP.Line">
+            <summary>
+            markup for the #line macro
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.DIFF">
+            <summary>
+            The DIFF class contains all of the XNames for SrcML Diff namespace.
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.DIFF.Prefix">
+            <summary>
+            XMLNS prefix for the SrcML SRC namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.DIFF.TypeWhitespace">
+            <summary>
+            The "whitespace" value for <see cref="F:ABB.SrcML.DIFF.TypeAttribute"/>
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.DIFF.TypeChange">
+            <summary>
+            /// The "change" value for <see cref="F:ABB.SrcML.DIFF.TypeAttribute"/>
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.DIFF.NS">
+            <summary>
+            XNamespace for the SrcML SRC XML namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.DIFF.Insert">
+            <summary>
+            Markup for the diff:insert tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.DIFF.Delete">
+            <summary>
+            Markup for the diff:delete tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.DIFF.TypeAttribute">
+            <summary>
+            XName for the "type" attribute. The value of this attribute can be either TypeWhitespace or TypeChange
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.LIT">
+            <summary>
+            SrcML Namespace for literals
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.LIT.Prefix">
+            <summary>
+            XMLNS prefix for the SrcML LIT namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.LIT.ArgumentLabel">
+            <summary>
+            Argument string to pass to one of the srcml executables to enable this namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.LIT.NS">
+            <summary>
+            XNamespace for the SrcML Literal XML namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.LIT.Literal">
+            <summary>
+            Literal element -- all literals are surrounded with this:
+            e.g. &lt;literal&gt;-&lt;&lt;/literal&gt;
+            &lt;lit:literal type="string"&gt;"foo"&lt;/lit:literal&gt;
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.OP">
+            <summary>
+            The operator namespace marks up operators ('-&lt;', '.', '+', '-') with the Operator element.
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.OP.Prefix">
+            <summary>
+            XMLNS prefix for the SrcML OP namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.OP.ArgumentLabel">
+            <summary>
+            Argument string to pass to one of the srcml executables to enable this namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.OP.NS">
+            <summary>
+            XNamespace for the SrcML Operator XML namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.OP.Operator">
+            <summary>
+            Operator element -- all operators are surrounded with this:
+            e.g. &lt;operator&gt;-&lt;&lt;/operator&gt;
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.POS">
+            <summary>
+            SrcML Namespace for source position.
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.POS.Prefix">
+            <summary>
+            XMLNS prefix for the SrcML OP namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.POS.ArgumentLabel">
+            <summary>
+            Argument string to pass to one of the srcml executables to enable this namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.POS.NS">
+            <summary>
+            XNamespace for the SrcML Position XML namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.POS.Line">
+            <summary>
+            This attribute indicates the line number that the source element is located on
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.POS.Column">
+            <summary>
+            This attribute indicates the column that the source element starts at
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.SRC">
+            <summary>
+            The SRC class contains all of the XNames for SrcML SRC tags.
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Prefix">
+            <summary>
+            XMLNS prefix for the SrcML SRC namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.NS">
+            <summary>
+            XNamespace for the SrcML SRC XML namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Unit">
+            <summary>
+            markup for the unit tag.
+            
+            The unit tag is the basic Container for SrcML. A Unit can represent either a single source file, or a collection of source files (in which case the XML document will have a single root unit, with many child units).
+            </summary>
+            TODO document unit attributes.
+        </member>
+        <member name="F:ABB.SrcML.SRC.Block">
+            <summary>
+            XML Markup for the source code block:
+            
+            <code lang="XML">&lt;block&gt;{ ...statements... }&lt;block&gt;</code>
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Comment">
+            <summary>
+            markup for the comment tag
+            </summary>
+            TODO document comment attributes.
+        </member>
+        <member name="F:ABB.SrcML.SRC.Public">
+            <summary>
+            markup for the public access specifier.
+            
+            In C++, the following class:break
+            
+            <code lang="C++">
+            class A
+            {
+            public:
+                int a;
+            }
+            </code>
+            
+            will be marked up as
+            
+            <code lang="XML">
+            &lt;class&gt;class &lt;name&gt;A&lt;/name&gt;
+            &lt;block&gt;{&lt;private type="default"&gt;
+            &lt;/private&gt;&lt;public&gt;public:
+            &lt;function_decl&gt;&lt;type&gt;&lt;name&gt;int&lt;/name&gt;&lt;/type&gt; &lt;name&gt;a&lt;/name&gt;&lt;parameter_list&gt;()&lt;/parameter_list&gt;;&lt;/function_decl&gt;
+            &lt;/public&gt;}&lt;/block&gt;&lt;decl/&gt;&lt;/class&gt;
+            </code>
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Private">
+            <summary>
+            markup for the private tag
+            </summary>
+            TODO document private attributes.
+        </member>
+        <member name="F:ABB.SrcML.SRC.Protected">
+             markup for the public access specifier.
+             
+             In C++, the following class:
+             
+             <code lang="C++">
+             class A
+             {
+             public:
+                 int a;
+             }
+             </code>
+             
+             will be marked up as
+             
+             <code lang="XML">
+            &lt;class&gt;class &lt;name&gt;A&lt;/name&gt;
+            &lt;block&gt;{&lt;private type="default"&gt;
+            &lt;/private&gt;&lt;protected&gt;protected:
+            	&lt;function_decl&gt;&lt;type&gt;&lt;name&gt;int&lt;/name&gt;&lt;/type&gt; &lt;name&gt;a&lt;/name&gt;&lt;parameter_list&gt;()&lt;/parameter_list&gt;;&lt;/function_decl&gt;
+            &lt;/protected&gt;}&lt;/block&gt;&lt;decl/&gt;&lt;/class&gt;
+             </code>
+        </member>
+        <member name="F:ABB.SrcML.SRC.ExpressionStatement">
+            <summary>
+            markup for the expr expression statement tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Expression">
+            <summary>
+            markup for the expr tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Declaration">
+            <summary>
+            markup for the decl tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Type">
+            <summary>
+            markup for the type tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Name">
+            <summary>
+            markup for the name tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Init">
+            <summary>
+            markup for the init tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Index">
+            <summary>
+            markup for the index tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.DeclarationStatement">
+            <summary>
+            markup for the decl_stmt tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Typedef">
+            <summary>
+            markup for the typedef tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Label">
+            <summary>
+            markup for the label tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Goto">
+            <summary>
+            markup for the goto tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Asm">
+            <summary>
+            markup for the asm tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Enum">
+            <summary>
+            markup for the enum tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.If">
+            <summary>
+            markup for the if tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Then">
+            <summary>
+            markup for the then block tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Else">
+            <summary>
+            markup for the else tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.While">
+            <summary>
+            markup for the while tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Do">
+            <summary>
+            markup for the do tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.For">
+            <summary>
+            markup for the for tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Increment">
+            <summary>
+            markup for the incr tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Condition">
+            <summary>
+            markup for the condition tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Switch">
+            <summary>
+            markup for the switch tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Case">
+            <summary>
+            markup for the case tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Default">
+            <summary>
+            markup for the default tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Break">
+            <summary>
+            markup for the break tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Continue">
+            <summary>
+            markup for the continue tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Call">
+            <summary>
+            markup for the call tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.ArgumentList">
+            <summary>
+            markup for the argument_list tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Argument">
+            <summary>
+            markup for the argument tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.FunctionPrototype">
+            <summary>
+            markup for the function_prototype tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Function">
+            <summary>
+            markup for the function tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.FunctionDeclaration">
+            <summary>
+            markup for the  function_decl tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.ParameterList">
+            <summary>
+            markup for the parameter_list tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Parameter">
+            <summary>
+            markup for the param tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Specifier">
+            <summary>
+            markup for the specifier tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Return">
+            <summary>
+            markup for the return tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Class">
+            <summary>
+            markup for the class tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.ClassDeclaration">
+            <summary>
+            markup for the class_decl tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Struct">
+            <summary>
+            markup for the struct tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.StructDeclaration">
+            <summary>
+            markup for the struct_decl tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Union">
+            <summary>
+            markup for the union tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.UnionDeclaration">
+            <summary>
+            markup for the union_decl tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Constructor">
+            <summary>
+            markup for the Constructor tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.MemberList">
+            <summary>
+            markup for the member_list tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.ConstructorDeclaration">
+            <summary>
+            markup for the constructor_decl tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Destructor">
+            <summary>
+            markup for the destructor tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.DestructorDeclaration">
+            <summary>
+            markup for the destructor_decl tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Try">
+            <summary>
+            markup for the try tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Throw">
+            <summary>
+            markup for the throw tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Catch">
+            <summary>
+            markup for the catch tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Template">
+            <summary>
+            markup for the template tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Namespace">
+            <summary>
+            markup for the namespace tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Using">
+            <summary>
+            markup for the using tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Extern">
+            <summary>
+            markup for the extern tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Macro">
+            <summary>
+            markup for the macro tag
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.TYPE">
+            <summary>
+            SrcML Namespace for C/C++ modifiers
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.TYPE.Prefix">
+            <summary>
+            XMLNS prefix for the SrcML TYPE namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.TYPE.ArgumentLabel">
+            <summary>
+            Argument string to pass to one of the srcml executables to enable this namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.TYPE.NS">
+            <summary>
+            XNamespace for the SrcML Modifier XML namespace
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.TYPE.Modifier">
+            <summary>
+            Operator element -- all operators are surrounded with this:
+            e.g. &lt;operator&gt;-&lt;&lt;/operator&gt;
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.QueryAttribute">
+            <summary>
+            The Query attribute is used to identify SrcML Query functions that can be tested by the SrcML Preview Addin.
+            <seealso cref="T:ABB.SrcML.QueryHarness"/>
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.QueryHarness">
+            <summary>
+            QueryHarness is a test harness for methods with the <see cref="T:ABB.SrcML.QueryAttribute"/>. The test takes a type and a method to be tested.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.QueryHarness.#ctor(System.Type,System.String)">
+            <summary>
+            Instantiates a new QueryFunctionTestObject with <paramref name="type"/> and <paramref name="methodName"/>.
+            </summary>
+            <param name="type">The type to make a query function for</param>
+            <param name="methodName">the method in <paramref name="type"/> to test</param>
+        </member>
+        <member name="M:ABB.SrcML.QueryHarness.#ctor(System.Type,System.Reflection.MethodInfo)">
+            <summary>
+            Instantiates a new QueryFunctionTestObject with <paramref name="type"/> and <paramref name="method"/>.
+            </summary>
+            <param name="type"></param>
+            <param name="method"></param>
+        </member>
+        <member name="M:ABB.SrcML.QueryHarness.CreateFromType(System.Type)">
+            <summary>
+            Generates a QueryHarness object for each function in <paramref name="type"/> that has the <see cref="T:ABB.SrcML.QueryAttribute"/>
+            and matches the <see cref="M:ABB.SrcML.ITransform.Query(System.Xml.Linq.XElement)"/> signature.
+            </summary>
+            <param name="type">The type to find queries in.</param>
+            <returns>An IEnumerable of QueryHarness objects</returns>
+        </member>
+        <member name="M:ABB.SrcML.QueryHarness.ToString">
+            <summary>
+            Gives the full signature of the function being tested.
+            </summary>
+            <returns>The full signature &lt;return type&gt; &lt;type&gt;.&lt;function name&gt;(&lt;parameter list&gt;)</returns>
+        </member>
+        <member name="M:ABB.SrcML.QueryHarness.Query(System.Xml.Linq.XElement)">
+            <summary>
+            The query function takes the given type and executes its Query function.
+            </summary>
+            <param name="element"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ABB.SrcML.QueryHarness.Transform(System.Xml.Linq.XElement)">
+            <summary>
+            This just returns the input <paramref name="element"/>
+            </summary>
+            <param name="element">The XElement to transform</param>
+            <returns><paramref name="element"/></returns>
+        </member>
+        <member name="T:ABB.SrcML.Src2SrcMLRunner">
+            <summary>
+            Utility class for running src2srcml.exe
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.SrcMLRunner">
+            <summary>
+            Abstract class for controlling srcml executables (src2srcml, srcml2src, and srcdiff).
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.Utilities.ExecutableRunner">
+            <summary>
+            Wrapper class for running executables with given command line arguments
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ExecutableRunner.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.Utilities.ExecutableRunner"/> class.
+            </summary>
+            <param name="applicationDirectory">The application directory.</param>
+            <param name="executableName">Name of the executable.</param>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ExecutableRunner.Run(System.Collections.ObjectModel.Collection{System.String})">
+            <summary>
+            Runs this executable with the specified arguments.
+            </summary>
+            <param name="arguments">The arguments.</param>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ExecutableRunner.Run(System.String)">
+            <summary>
+            Runs this executable with the specified argument text.
+            </summary>
+            <param name="argumentText">The argument text.</param>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ExecutableRunner.Run(System.Collections.ObjectModel.Collection{System.String},System.String)">
+            <summary>
+            Runs this executable with the specified arguments and additional input passed in on standard input.
+            </summary>
+            <param name="arguments">The arguments.</param>
+            <param name="standardInput">The standard input.</param>
+            <returns></returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ExecutableRunner.Run(System.String,System.String)">
+            <summary>
+            Runs this executable with the specified argument text and additional input passed in on standard input.
+            </summary>
+            <param name="argumentText">The argument text.</param>
+            <param name="standardInput">The standard input.</param>
+            <returns></returns>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.ExecutableRunner.ExecutableName">
+            <summary>
+            Gets or sets the name of the executable.
+            </summary>
+            <value>
+            The name of the executable.
+            </value>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.ExecutableRunner.ApplicationDirectory">
+            <summary>
+            Gets or sets the application directory.
+            </summary>
+            <value>
+            The application directory.
+            </value>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.ExecutableRunner.ExecutablePath">
+            <summary>
+            Gets the executable path.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLRunner.#ctor(System.String,System.String,System.Collections.ObjectModel.Collection{System.String})">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.SrcMLRunner"/> class.
+            </summary>
+            <param name="applicationDirectory">The application directory.</param>
+            <param name="executableName">Name of the executable.</param>
+            <param name="namespaceArguments">The namespace arguments.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLRunner.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.SrcMLRunner"/> class.
+            </summary>
+            <param name="applicationDirectory">The application directory.</param>
+            <param name="executableName">Name of the executable.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLRunner.Run(System.String,System.Collections.ObjectModel.Collection{System.String})">
+            <summary>
+            Runs this executable and places the output in the specified output file.
+            This executable is run with the following string <c>[this.ExecutablePath] --register-ext [ExtensionMapping] --output=[outputfile] [addititionlArguments]</c>
+            </summary>
+            <param name="outputFile">The output file.</param>
+            <param name="additionalArguments">The additional arguments.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLRunner.Run(System.String,System.Collections.ObjectModel.Collection{System.String},System.Collections.ObjectModel.Collection{System.String})">
+            <summary>
+            Runs this executable and places the output in the specified output file. The inputs are written to a temporary file that is deleted when finished.
+            This executable is run with the following string <c>[this.ExecutablePath] --register-ext [ExtensionMapping] --output=[outputfile] --files-from=[input file] [addititionlArguments]</c>
+            </summary>
+            <param name="outputFile">The output file.</param>
+            <param name="additionalArguments">The additional arguments.</param>
+            <param name="inputs">The inputs.</param>
+        </member>
+        <member name="P:ABB.SrcML.SrcMLRunner.ExtensionMapping">
+            <summary>
+            Mapping of source extensions to their languages.
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.SrcMLRunner.TreatHeadersAsCPlusPlus">
+            <summary>
+            Gets or sets a value indicating whether to treat headers (.h files) as C plus plus].
+            If this property is set to <c>false</c>, headers will be treated as C regardless of the language assigned to it
+            </summary>
+            <value>
+            	<c>true</c> if [treat headers as C plus plus]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:ABB.SrcML.SrcMLRunner.NamespaceArguments">
+            <summary>
+            Gets or sets the list of common namespace arguments
+            </summary>
+            <value>
+            The namespace arguments.
+            </value>
+        </member>
+        <member name="F:ABB.SrcML.Src2SrcMLRunner.Src2SrcMLExecutableName">
+            <summary>
+            The src2srcml executable name
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.Src2SrcMLRunner"/> class.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.Src2SrcMLRunner"/> class.
+            </summary>
+            <param name="applicationDirectory">The application directory.</param>
+        </member>
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.#ctor(System.String,System.Collections.ObjectModel.Collection{System.String})">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.Src2SrcMLRunner"/> class.
+            </summary>
+            <param name="applicationDirectory">The application directory.</param>
+            <param name="namespaceArguments">The namespace arguments.</param>
+        </member>
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLFromDirectory(System.String,System.String)">
+            <summary>
+            Generate a SrcML document from the given path and place it in the XML file.
+            </summary>
+            <param name="directoryPath">the directory path</param>
+            <param name="xmlFileName">the path of the xml file</param>
+            <returns>A SrcMLFile that points at <paramref name="xmlFileName"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLFromDirectory(System.String,System.String,ABB.SrcML.Language)">
+            <summary>
+            Generates a SrcML document from the given path and place it in the XML file. The XML document will only contain files classified as <paramref name="languageFilter"/>.
+            </summary>
+            <param name="directoryPath">the directory path</param>
+            <param name="xmlFileName">the path of the xml file</param>
+            <param name="languageFilter">the language to filter on</param>
+            <returns>A SrcMLFile that points at <paramref name="xmlFileName"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLFromDirectory(System.String,System.String,System.Collections.ObjectModel.Collection{System.String})">
+            <summary>
+            Generates a SrcML document from the given path and place it in the XML file. The XML document will only contain files not present in <paramref name="filesToExclude"/>
+            </summary>
+            <param name="directoryPath">the directory path</param>
+            <param name="xmlFileName">the path of the xml file</param>
+            <param name="filesToExclude">A collection of files to exclude from <paramref name="xmlFileName"/></param>
+            <returns>A SrcMLFile that points at <paramref name="xmlFileName"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLFromDirectory(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},ABB.SrcML.Language)">
+            <summary>
+            Generates a SrcML document from the given path and place it in the XML file.
+            The output can be controlled by using <paramref name="filesToExclude"/>, and <paramref name="languageFilter"/>
+            </summary>
+            <param name="directoryPath">the directory path</param>
+            <param name="xmlFileName">the path of the xml file</param>
+            <param name="filesToExclude">A collection of files to exclude from <paramref name="xmlFileName"/></param>
+            <param name="languageFilter">the language to filter on</param>
+            <returns>A SrcMLFile that points at <paramref name="xmlFileName"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLFromFile(System.String,System.String)">
+            <summary>
+            Generate a SrcML document from a single source file. The language will be inferred from the extension.
+            </summary>
+            <param name="sourceFileName">path to the source file to convert.</param>
+            <param name="xmlFileName">The File name to write the resulting XML to.</param>
+            <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLFromFile(System.String,System.String,ABB.SrcML.Language)">
+            <summary>
+            Generate a SrcML document from a single source file with the specified language.
+            </summary>
+            <param name="sourceFileName">The path to the source file to convert.</param>
+            <param name="xmlFileName">The file name to write the resulting XML to.</param>
+            <param name="language">The language to parse the source file as.</param>
+            <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLFromString(System.String)">
+            <summary>
+            Generate SrcML from a given string of source code. The source code will be parsed as C++.
+            </summary>
+            <param name="source">A string containing the source code to parse.</param>
+            <returns>XML representing the source.</returns>
+        </member>
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLFromString(System.String,ABB.SrcML.Language)">
+            <summary>
+            Generate SrcML from a given string of source code.
+            </summary>
+            <param name="source">A string containing the source code to parse.</param>
+            <param name="language">The source language to use (C,C++,Java,AspectJ).
+            If the source languageFilter is either not in this list or is null, the default source language (C++) will be used.</param>
+            <returns>XML representing the source.</returns>
+        </member>
+        <member name="T:ABB.SrcML.SrcML">
+            <summary>
+            This is a utility class for generating SrcML files. It has functions that use the original SrcML executables,
+            and some native C# functions for generating SrcML.
+            </summary>
+            TODO split the SrcML class into src2srcml &amp; srcml2src runner classes
+        </member>
+        <member name="F:ABB.SrcML.SrcML.Src2SrcMLExecutableName">
+            <summary>executable name for src2srcml executable</summary>
+        </member>
+        <member name="F:ABB.SrcML.SrcML.SrcML2SrcExecutableName">
+            <summary>executable name for ExtractSourceFile executable</summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.#ctor">
+            <summary>
+            Creates a new SrcML object rooted in a default directory. If the SRCMLBINDIR environment variable is set, that is used.
+            If not, then c:\Program Files (x86)\SrcML\bin is used.
+            If that doesn't exist, c:\Program Files\SrcML\bin is used.
+            
+            If none of these directories is sued, the current directory is used.
+            <seealso cref="M:ABB.SrcML.SrcML.#ctor(System.String)"/>
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.#ctor(System.String)">
+            <summary>
+            Creates a new SrcML object rooted in the given directory.
+            </summary>
+            <param name="binDirectory">The path to the directory containing the SrcML executables.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromString(System.String)">
+            <summary>
+            Generate SrcML from a given string of source code. The source code will be parsed as C++.
+            </summary>
+            <param name="source">A string containing the source code to parse.</param>
+            <returns>XML representing the source.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromString(System.String,ABB.SrcML.Language)">
+            <summary>
+            Generate SrcML from a given string of source code.
+            </summary>
+            <param name="source">A string containing the source code to parse.</param>
+            <param name="language">The source language to use (C,C++,Java,AspectJ).
+            If the source languageFilter is either not in this list or is null, the default source language (C++) will be used.</param>
+            <returns>XML representing the source.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromFile(System.String,System.String)">
+            <summary>
+            Generate a SrcML document from a single source file. The language will be inferred from the extension.
+            </summary>
+            <param name="sourceFileName">path to the source file to convert.</param>
+            <param name="xmlFileName">The File name to write the resulting XML to.</param>
+            <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromFile(System.String,System.String,ABB.SrcML.Language)">
+            <summary>
+            Generate a SrcML document from a single source file with the specified language.
+            </summary>
+            <param name="sourceFileName">The path to the source file to convert.</param>
+            <param name="xmlFileName">The file name to write the resulting XML to.</param>
+            <param name="language">The language to parse the source file as.</param>
+            <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromProject(System.String)">
+            <summary>
+            Generate a SrcML file for the given Visual Studio project. The resulting XML
+            will be written to a file with the same name as the Visual Studio project
+            <seealso cref="M:ABB.SrcML.SrcML.GenerateSrcMLFromProject(System.String,System.String)"/>
+            </summary>
+            <param name="project">The path to the Visual Studio project file.</param>
+            <returns>A SrcMLFile based on the project.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromProject(System.String,System.String)">
+            <summary>
+            Generate a SrcML file from the Visual Studio project file with the language C++.
+            </summary>
+            <param name="project">The path to the Visual Studo project file.</param>
+            <param name="xmlFileName">The file name to write the resulting XML to.</param>
+            <returns>a SrcMLFile for <paramref name="xmlFileName"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromProject(System.String,System.String,ABB.SrcML.Language)">
+            <summary>
+            Generate a SrcML file from the Visual Studio project file, with the given language.
+            </summary>
+            <param name="project">The path to the Visual Studo project file.</param>
+            <param name="xmlFileName">The file name to write the resulting XML to.</param>
+            <param name="language">The source language to use (C,C++,Java,AspectJ)</param>
+            <returns>a SrcMLFile for <paramref name="xmlFileName"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromDirectory(System.String,System.String)">
+            <summary>
+            Generate a SrcML document from the given path and place it in the XML file.
+            </summary>
+            <param name="directoryPath">the directory path</param>
+            <param name="xmlFileName">the path of the xml file</param>
+            <returns>A SrcMLFile that points at <paramref name="xmlFileName"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromDirectory(System.String,System.String,ABB.SrcML.Language)">
+            <summary>
+            Generates a SrcML document from the given path and place it in the XML file. The XML document will only contain files classified as <paramref name="languageFilter"/>.
+            </summary>
+            <param name="directoryPath">the directory path</param>
+            <param name="xmlFileName">the path of the xml file</param>
+            <param name="languageFilter">the language to filter on</param>
+            <returns>A SrcMLFile that points at <paramref name="xmlFileName"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromDirectory(System.String,System.String,System.Collections.ObjectModel.Collection{System.String})">
+            <summary>
+            Generates a SrcML document from the given path and place it in the XML file. The XML document will only contain files not present in <paramref name="filesToExclude"/>
+            </summary>
+            <param name="directoryPath">the directory path</param>
+            <param name="xmlFileName">the path of the xml file</param>
+            <param name="filesToExclude">A collection of files to exclude from <paramref name="xmlFileName"/></param>
+            <returns>A SrcMLFile that points at <paramref name="xmlFileName"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromDirectory(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},ABB.SrcML.Language)">
+            <summary>
+            Generates a SrcML document from the given path and place it in the XML file.
+            The output can be controlled by using <paramref name="filesToExclude"/>, and <paramref name="languageFilter"/>
+            </summary>
+            <param name="directoryPath">the directory path</param>
+            <param name="xmlFileName">the path of the xml file</param>
+            <param name="filesToExclude">A collection of files to exclude from <paramref name="xmlFileName"/></param>
+            <param name="languageFilter">the language to filter on</param>
+            <returns>A SrcMLFile that points at <paramref name="xmlFileName"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.ExtractSourceFile(ABB.SrcML.SrcMLFile,System.Int32)">
+            <summary>
+            Runs the srcml2src.exe executable on the given SrcML document, and extracts the specific filename.
+            <para>It's probably better to use the <see cref="M:ABB.SrcML.Extensions.ToSource(System.Xml.Linq.XElement)"/> function, as it does not require starting a new process.</para>
+            </summary>
+            <param name="doc">The SrcML document to query.</param>
+            <param name="unitIndex">The index number of the SrcML document.</param>
+            <returns>The source code.</returns>
+            TODO change this to use AbstractDocument and use the new srcml2src that comes with srcdiff (remove the suppressmessage after)
+        </member>
+        <member name="M:ABB.SrcML.SrcML.ExtractSourceFile(ABB.SrcML.SrcMLFile,System.String)">
+            <summary>
+            Takes the given <paramref name="fileName"/> in <paramref name="doc"/> and returns the original source code.
+            <para>Instead of this, use <see cref="M:ABB.SrcML.Extensions.ToSource(System.Xml.Linq.XElement,System.Int32)"/>.</para>
+            <seealso cref="M:ABB.SrcML.SrcML.ExtractSourceFile(ABB.SrcML.SrcMLFile,System.Int32)"/>
+            </summary>
+            <param name="doc">The SrcML document to query.</param>
+            <param name="fileName">The file name to search for.</param>
+            <returns>A string with the original source code.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.getParentStatement(System.Xml.Linq.XElement)">
+            <summary>
+            Gets the parent statement for the given element.
+            </summary>
+            <param name="element">The element to find the parent of.</param>
+            <returns>The parent element for <paramref name="element"/>. It will be either <see cref="F:ABB.SrcML.SRC.ExpressionStatement"/> or <see cref="F:ABB.SrcML.SRC.DeclarationStatement"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromString(System.String,System.String)">
+            <summary>
+            Generate SrcML from a given string of source code.
+            </summary>
+            <param name="source">A string containing the source code to parse.</param>
+            <param name="language">The source language to use (C,C++,Java,AspectJ).
+            If the source langauge is either not in this list or is null, the default source language (C++) will be used.</param>
+            <returns>XML representing the source.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromFile(System.String,System.String,System.String)">
+            <summary>
+            Generate a SrcML document from a single source file with the specified language.
+            </summary>
+            <param name="sourceFileName">The path to the source file to convert.</param>
+            <param name="xmlFileName">The file name to write the resulting XML to.</param>
+            <param name="language">The language to parse the source file as.</param>
+            <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromProject(System.String,System.String,System.String)">
+            <summary>
+            Generate a SrcML file from the Visual Studio project file, with the given languageFilter.
+            </summary>
+            <param name="project">The path to the Visual Studo project file.</param>
+            <param name="xmlFileName">The file name to write the resulting XML to.</param>
+            <param name="language">The source language to use (C,C++,Java,AspectJ)</param>
+            <returns>a SrcMLFile for <paramref name="xmlFileName"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromDirectory(System.String,System.String,System.Boolean)">
+            <summary>
+            Generate a SrcML file from the given directory.
+            </summary>
+            <param name="path">The path to the source directory.</param>
+            <param name="xmlFileName">The path to write the resulting XML to.</param>
+            <param name="overrideJava">If true, parse Java files as C++</param>
+            <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromDirectory(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            Generate a SrcML file from the given directory, with the given languageFilter.
+            Only source files for the given languageFilter are included in the output.
+            </summary>
+            <param name="path">The path to the source directory.</param>
+            <param name="xmlFileName">The path to write the resulting XML to.</param>
+            <param name="language">The language to find files for.</param>
+            <param name="overrideJava">if true, parse Java files as C++</param>
+            <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromDirectory(System.String,System.String,System.String,System.Boolean,System.Collections.Generic.List{System.String})">
+            <summary>
+            Generate a SrcML file from the given directory, with the given languageFilter.
+            Only source files for the given languageFilter are included in the output.
+            </summary>
+            <param name="path">The path to the source directory.</param>
+            <param name="xmlFileName">The path to write the resulting XML to.</param>
+            <param name="language">The language to find files for.</param>
+            <param name="overrideJava">if true, parse Java files as C++</param>
+            <param name="fileExclusionList">List of files to exclude. This is accomplished via simple string matching; so the entire file path should be used.</param>
+            <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcML.GenerateSrcMLFromDirectory(System.String,System.String,System.Boolean,System.String)">
+            <summary>
+            Generate a SrcML file from the given directory.
+            </summary>
+            <param name="path">The path to the source directory.</param>
+            <param name="xmlFileName">The path to write the resulting XML to.</param>
+            <param name="overrideJava">If true, parse Java files as C++</param>
+            <param name="exclusionListFile">A list of files to exclude from the SrcML document. If null; exclude no files.</param>
+            <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="P:ABB.SrcML.SrcML.ExtensionMapping">
+            <summary>
+            Mapping of source extensions to their languages.
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.SrcML.DefaultNamespaceArguments">
+            <summary>
+            List of common name space arguments that src2srcml.exe uses to modify its output.
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.SrcML.SrcMLDirectory">
+            <summary>
+            Gets the directory that src2srcml and ExtractSourceFile can be found in
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.SrcML.NamespaceManager">
+            <summary>
+            Gets the default XmlNamespaceManager that contains all of the SrcML namespaces
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.SrcML2SrcRunner">
+            <summary>
+            Utility class for running srcml2src.exe
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SrcML2SrcRunner.SrcML2SrcExecutableName">
+            <summary>
+            The srcml2src executable name
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcML2SrcRunner.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.SrcML2SrcRunner"/> class.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcML2SrcRunner.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.SrcML2SrcRunner"/> class.
+            </summary>
+            <param name="applicationDirectory">The application directory.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcML2SrcRunner.ExtractSource(System.String,System.String,System.Int32)">
+            <summary>
+            Extracts the source.
+            </summary>
+            <param name="xmlFileName">Name of the XML file.</param>
+            <param name="outputFileName">Name of the output file.</param>
+            <param name="unitIndex">Index of the unit.</param>
+        </member>
+        <member name="T:ABB.SrcML.SrcMLException">
+            <summary>
+            The base SrcML Exception
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.SrcMLException"/> class.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.SrcMLException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="innerException">The inner exception.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLException.#ctor(System.String)">
+            <summary>
+            Create a SrcMLException with the given message.
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.SrcMLException"/> class.
+            </summary>
+            <param name="serializationInfo">The serialization info.</param>
+            <param name="context">The context.</param>
+        </member>
+        <member name="T:ABB.SrcML.SrcMLFile">
+            <summary>
+            This class represents a SrcMLFile. The underlying data is stored in an XML file, and can be accessed in a number of ways.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.#ctor(ABB.SrcML.SrcMLFile)">
+            <summary>
+            Instantiates a new SrcMLFile with the characteristics of another SrcMLFile.
+            </summary>
+            <param name="other">The SrcMLFile to copy.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.#ctor(System.String)">
+            <summary>
+            Instantiates new SrcML file based on the given file.
+            </summary>
+            <param name="fileName">The file to read from.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.Merge(ABB.SrcML.SrcMLFile,System.String)">
+            <summary>
+            Merges this SrcMLFile with another SrcMLFile. 
+            </summary>
+            <param name="other">The second SrcML File to merge with.</param>
+            <param name="outputFileName">The path to write the resulting SrcMLFile to.</param>
+            <returns>The newly merged SrcMLFile.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.GetPathForUnit(System.Xml.Linq.XElement)">
+            <summary>
+            Get the full path to the unit as specified by either Path.Combine(dir,filename) or filename (if dir is null)
+            </summary>
+            <param name="unit">the unit to find the path for</param>
+            <returns>the path to the unit</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.RelativePath(System.Xml.Linq.XNode)">
+            <summary>
+            Get the file path relative to <see cref="P:ABB.SrcML.SrcMLFile.ProjectDirectory"/> for the unit containing the given node.
+            </summary>
+            <param name="node">The node.</param>
+            <returns>The relative file path to that node.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.GetXDocument">
+            <summary>
+            Get this SrcML file as an XDocument. This should not be used on very large SrcML file as it
+            loads the entire XML file into memory.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.QueryEachUnit(ABB.SrcML.ITransform)">
+            <summary>
+            Works in conjunction with <see cref="P:ABB.SrcML.AbstractDocument.FileUnits"/> to execute a query against each file in a SrcML document
+            </summary>
+            <param name="transform">The transform object with the <see cref="M:ABB.SrcML.ITransform.Query(System.Xml.Linq.XElement)"/></param>
+            <returns>yields each node that matches the query in <paramref name="transform"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.Save(System.String,System.Collections.Generic.IEnumerable{System.Xml.Linq.XElement})">
+            <summary>
+            Writes this SrcML file to <paramref name="fileName"/> with changes stored in <paramref name="changedFiles"/>.
+            Currently, this only handles changes to existing files. New files will be ignored.
+            </summary>
+            <param name="fileName">The file to write to. If it exists it will be deleted and replaced.</param>
+            <param name="changedFiles">A list of units with changes. These will be substituted for the original units.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.Save(System.Collections.Generic.IEnumerable{System.Xml.Linq.XElement})">
+            <summary>
+            Writes changes to this SrcML file back to the current file (<see cref="P:ABB.SrcML.AbstractDocument.FileName"/>).
+            <seealso cref="M:ABB.SrcML.SrcMLFile.Save(System.String,System.Collections.Generic.IEnumerable{System.Xml.Linq.XElement})"/>
+            </summary>
+            <param name="changedFiles">a list of units with changes. These will be substituted for the original units</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.Save(System.String)">
+            <summary>
+            Writes this SrcML file to <paramref name="fileName"/> without making any changes.
+            <para>This is identical to <c>srcmlDoc.Save(fileName, Enumerable.Empty&lt;XElement&gt;()</c></para>
+            <seealso cref="M:System.Linq.Enumerable.Empty``1"/>
+            </summary>
+            <param name="fileName">the file to write to. If it exists it will be deleted and replaced.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.Write(System.String)">
+            <summary>
+            Saves the document to the file. This uses <see cref="T:System.Xml.Linq.XDocument"/>, which is more memory intensive.
+            <seealso cref="M:System.Xml.Linq.XDocument.Save(System.String)"/>
+            </summary>
+            <param name="fileName">The filename to write to.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.Write">
+            <summary>
+            Writes the document back to the current file <see cref="P:ABB.SrcML.AbstractDocument.FileName"/>.
+            <seealso cref="M:ABB.SrcML.SrcMLFile.Write(System.String)"/>
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.ExportSource">
+            <summary>
+            Exports all of the source code contained in the SrcML Document back to disk.
+            <para>The entire directory structure is recreated and placed in <see cref="P:ABB.SrcML.SrcMLFile.ProjectDirectory"/>.</para>
+            </summary>
+            <returns>A list of file names that could not be written.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.IndexOfUnit(System.String)">
+            <summary>
+            Gets the index number of a given filename from the SrcML document.
+            If this is being passed to SrcML.ExtractSourceFile(), +1 must be added to it.
+            </summary>
+            <param name="fileName">The filename to get an index for.</param>
+            <returns>the index of the file. -1 if not found.</returns>
+        </member>
+        <member name="P:ABB.SrcML.SrcMLFile.ProjectDirectory">
+            <summary>
+            The project rootUnit directory for this SrcMLFile.
+            </summary>
+            <value>The ProjectDirectory property gets &amp; sets the rootUnit directory for this SrcMLFile.</value>
+        </member>
+        <member name="T:ABB.SrcML.SrcMLHelper">
+            <summary>
+            Collection of helper functions for working with srcML elements
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLHelper.ThrowExceptionOnInvalidName(System.Xml.Linq.XName,System.Xml.Linq.XName)">
+            <summary>
+            <exception cref="T:ABB.SrcML.SrcMLRequiredNameException">Throws a SrcMLRequiredNameException if <paramref name="name"/> does not match <paramref name="requiredName"/>.</exception>
+            </summary>
+            <param name="name">The name.</param>
+            <param name="requiredName">Name of the required.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLHelper.ThrowExceptionOnInvalidName(System.Xml.Linq.XName,System.Collections.Generic.IEnumerable{System.Xml.Linq.XName})">
+            <summary>
+            <exception cref="T:ABB.SrcML.SrcMLRequiredNameException">Throws a SrcMLRequiredNameException if <paramref name="name"/> is not in the list of <paramref name="validNames">valid names</paramref>.</exception>
+            </summary>
+            <param name="name">The name.</param>
+            <param name="validNames">The valid names.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLHelper.ThrowExceptionOnInvalidName(System.Xml.Linq.XElement,System.Xml.Linq.XName)">
+            <summary>
+            <exception cref="T:ABB.SrcML.SrcMLRequiredNameException">Thrown if the given <paramref name="element"/> does not have <paramref name="requiredName"/> as it's Name.</exception>
+            </summary>
+            <param name="element">The element to check the name for</param>
+            <param name="requiredName">The name required</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLHelper.ThrowExceptionOnInvalidName(System.Xml.Linq.XElement,System.Collections.Generic.IEnumerable{System.Xml.Linq.XName})">
+            <summary>
+            <exception cref="T:ABB.SrcML.SrcMLRequiredNameException">Thrown if the given <paramref name="element"/> does not have a Name from the list of <paramref name="validNames"/></exception>
+            </summary>
+            <param name="element">The element to check the name for</param>
+            <param name="validNames">The collection of valid names</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLHelper.GetNameForMethod(System.Xml.Linq.XElement)">
+            <summary>
+            <para>Gets the function name for the given method.</para>
+            <para>If the function is an implementation of a class method, it has two parts: the class name and the method name. This function returns just the method name if both are present</para>
+            </summary>
+            <param name="method">The method to get the name for</param>
+            <returns>The name of the method</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLHelper.GetClassNameForMethod(System.Xml.Linq.XElement)">
+            <summary>
+            Gets the class name for method.
+            </summary>
+            <param name="method">The method.</param>
+            <returns>the class name if found. Otherwise, null</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLHelper.GetCallsFromFunction(System.Xml.Linq.XElement)">
+            <summary>
+            <para>Gets all the calls contained in a function element.Function elements can either be of type <c>SRC.Function</c> or <c>SRC.Constructor</c>.</para>
+            <exception cref="T:ABB.SrcML.SrcMLRequiredNameException">thrown if <c>function.Name</c> is not <c>SRC.Constructor</c> or <c>SRC.Function</c></exception>
+            </summary>
+            <param name="function">the function to find calls in</param>
+            <returns>all method calls and constructor uses</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLHelper.GetSrcMLDefaultDirectory">
+            <summary>
+            Gets the default srcML binary directory. It checks the following conditions:
+            1. If the SRCMLBINDIR environment variable is set, then that is used.
+            2. If c:\Program Files (x86)\SrcML\bin directory exists (should only exist on 64-bit systems), then that is used.
+            3. If c:\Program Files\SrcML\bin directory exists, then that is used.
+            4. If none of the above is true, then the current directory is used.
+            
+            This function does not check that any of the paths actually contains the srcML executables.
+            </summary>
+            <returns>The default srcML binary directory.</returns>
+        </member>
+        <member name="T:ABB.SrcML.SrcMLRequiredNameException">
+            <summary>
+            This exception is thrown whenever a function recieves an XElement parameter with an invalid XName.
+            <see cref="M:ABB.SrcML.SrcMLHelper.ThrowExceptionOnInvalidName(System.Xml.Linq.XName,System.Xml.Linq.XName)">for the typical way of checking for and throwing this exception.</see>
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLRequiredNameException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.SrcMLRequiredNameException"/> class.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLRequiredNameException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.SrcMLRequiredNameException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLRequiredNameException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.SrcMLRequiredNameException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="innerException">The inner exception.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLRequiredNameException.#ctor(System.Collections.Generic.ICollection{System.Xml.Linq.XName},System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.SrcMLRequiredNameException"/> class.
+            </summary>
+            <param name="validNames">The valid names.</param>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLRequiredNameException.#ctor(System.Xml.Linq.XName,System.String)">
+            <summary>
+            Creates the exception with the given XName and message.
+            </summary>
+            <param name="expectedName">The expected XName</param>
+            <param name="message">A message describing what went wrong</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLRequiredNameException.#ctor(System.Collections.Generic.ICollection{System.Xml.Linq.XName})">
+            <summary>
+            Creates the exception with the given collection of XNames and a default message
+            </summary>
+            <param name="validNames">collection of valid names</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLRequiredNameException.#ctor(System.Xml.Linq.XName)">
+            <summary>
+            Creates the exception with the given XName and a default message
+            </summary>
+            <param name="expectedName">The expected XName</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLRequiredNameException.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            When overridden in a derived class, sets the <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with information about the exception.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.</param>
+            <exception cref="T:System.ArgumentNullException">The <paramref name="info"/> parameter is a null reference (Nothing in Visual Basic). </exception>
+              
+            <PermissionSet>
+              <IPermission class="System.Security.Permissions.FileIOPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Read="*AllFiles*" PathDiscovery="*AllFiles*"/>
+              <IPermission class="System.Security.Permissions.SecurityPermission, mscorlib, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" version="1" Flags="SerializationFormatter"/>
+              </PermissionSet>
+        </member>
+        <member name="P:ABB.SrcML.SrcMLRequiredNameException.ExpectedNames">
+            <summary>
+            The collection of required names
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.Query">
+            <summary>
+            A delegate for SrcML query functions.
+            </summary>
+            <param name="element">The XML node to query from.</param>
+            <returns>A list of matching nodes from <paramref name="element"/>.</returns>
+        </member>
+        <member name="T:ABB.SrcML.Transform">
+            <summary>
+            A delegate for SrcML transform functions.
+            </summary>
+            <param name="element">the element to transform</param>
+        </member>
+        <member name="T:ABB.SrcML.TransformObjectHarness">
+            <summary>
+            TransformObjectHarness is a test harness for testing objects that implement the <see cref="T:ABB.SrcML.ITransform"/> interface.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.TransformObjectHarness.#ctor(System.Type)">
+            <summary>
+            Instantiates a new QueryFunctionTestObject for <paramref name="type"/>.
+            </summary>
+            <param name="type">The type to create a Test object for.</param>
+        </member>
+        <member name="M:ABB.SrcML.TransformObjectHarness.ToString">
+            <summary>
+            Returns the type being tested.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ABB.SrcML.TransformObjectHarness.Query(System.Xml.Linq.XElement)">
+            <summary>
+            Instantiates the object under test and then executes its query function.
+            </summary>
+            <param name="element">The XElement to query</param>
+            <returns>an IEnumerable of the results</returns>
+        </member>
+        <member name="M:ABB.SrcML.TransformObjectHarness.Transform(System.Xml.Linq.XElement)">
+            <summary>
+            Instantiates the object under test and then executes its transform function.
+            </summary>
+            <param name="element">The XElement to transform</param>
+            <returns>The transformed version of <paramref name="element"/></returns>
+        </member>
+        <member name="T:ABB.SrcML.TransformRunner">
+            <summary>
+            This class is a wrapper for querying and transforming a document using an ITransform.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.TransformRunner.RunQuery(ABB.SrcML.SrcMLFile,ABB.SrcML.ITransform)">
+            <summary>
+            Run the query against the given document.
+            </summary>
+            <param name="document">The document to query.</param>
+            <param name="transform">The transform containing the Query.</param>
+            <returns>The list of matching nodes.</returns>
+        </member>
+        <member name="M:ABB.SrcML.TransformRunner.RunTransform(System.Collections.Generic.IEnumerable{System.Xml.Linq.XElement},ABB.SrcML.ITransform)">
+            <summary>
+            Runs the transform against the list of elements.
+            </summary>
+            <param name="elements">The elements to transform.</param>
+            <param name="transform">The transform containing the <see cref="M:ABB.SrcML.ITransform.Transform(System.Xml.Linq.XElement)"/>.</param>
+            <returns>The list of transformed nodes.</returns>
+        </member>
+        <member name="T:ABB.SrcML.Utilities.DefaultsDictionary`2">
+            <summary>
+            DefaultsDictionary is a dictionary that starts with a list of default keys and values.
+            For functions that return only a single key, value, or Key-Value Pair, the method will first check its collection of non-default values. Then, it will check its collection of *default* values.
+            
+            For functions that return a collection or enumerator, the WillReturnDefaultValues flag controls whether or not default values are returned. If false (the default), default values are *not* returned.
+            This means that a DefaultsDictionary that consists of only default Key-Value Pairs will return an empty enumerator/collection.
+            </summary>
+            <typeparam name="TKey">The Key</typeparam>
+            <typeparam name="TValue">The Value</typeparam>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.DefaultsDictionary`2.#ctor(System.Collections.Generic.IDictionary{`0,`1},System.Boolean)">
+            <summary>
+            Constructs a new defaults dictionary.
+            </summary>
+            <param name="defaultDictionary">the initial dictionary of defaultsDictionary</param>
+            <param name="willReturnDefaultValues">true if it should return default values in collections and enumerators</param>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.DefaultsDictionary`2.#ctor(System.Collections.Generic.IDictionary{`0,`1})">
+            <summary>
+            Constructs a new defaults dictionary.
+            WillReturnDefaultValues is set to false by default.
+            </summary>
+            <param name="defaultDictionary">the initial dictionary of defaultsDictionary</param>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.DefaultsDictionary`2.Add(`0,`1)">
+            <summary>
+            Adds the key to the non-default set of key-value pairs
+            </summary>
+            <param name="key">the key to add</param>
+            <param name="value">the value corresponding to the key</param>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.DefaultsDictionary`2.ContainsKey(`0)">
+            <summary>
+            ContainsKey returns true if there is either a default or non-default key that matches <paramref name="key"/>.
+            </summary>
+            <param name="key">the key to search for</param>
+            <returns>true if the key is present; false otherwise</returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.DefaultsDictionary`2.Remove(`0)">
+            <summary>
+            Removes the given key from the dictionary only if it is not in the initial set of defaults
+            </summary>
+            <param name="key">The key to remove</param>
+            <returns>true if the key was removed</returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.DefaultsDictionary`2.TryGetValue(`0,`1@)">
+            <summary>
+            Tries to get the value for the  given key from the set of non-default KVPs and default KVPs.
+            </summary>
+            <param name="key">the key to find</param>
+            <param name="value">the value related to <paramref name="key"/></param>
+            <returns>true  if the Key-Value pair was present, false otherwise.</returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.DefaultsDictionary`2.Add(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <summary>
+            Adds a new Key-Value Pair to the non-default set
+            </summary>
+            <param name="item">The Key-Value Pair to add.</param>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.DefaultsDictionary`2.Clear">
+            <summary>
+            Clears the non-default values from the dictionary
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.DefaultsDictionary`2.Contains(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <summary>
+            Checks whether or not the given item is present in the dictionary. First, the non-default KVPs are checked, followed by the default KVPs.
+            </summary>
+            <param name="item">The item to check for</param>
+            <returns>True if the item is contained in this dictionary</returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.DefaultsDictionary`2.CopyTo(System.Collections.Generic.KeyValuePair{`0,`1}[],System.Int32)">
+            <summary>
+            Copies the Key-Value Pairs to the specified array. If WillReturnDefaultValues is true, then this copies all of the non-default KVPs, followed by any default KVPs.
+            </summary>
+            <param name="array">The array to copy to</param>
+            <param name="arrayIndex">The array index to start copying at</param>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.DefaultsDictionary`2.Remove(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <summary>
+            Removes the given Key-Value Pair from the list of non-default Key-Value Pairs; false otherwise.
+            This will return false if the Key-Value Pair is a default value.
+            </summary>
+            <param name="item">The Key-Value pair to remove</param>
+            <returns>true if the item was removed; false otherwise</returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.DefaultsDictionary`2.GetEnumerator">
+            <summary>
+            Returns an enumerator over the contents of this dictionary. If WillReturnDefaultValues is true, this will include both default &amp; non-default options.
+            If WillReturnDefaultValues is false, this will include only default options.
+            </summary>
+            <returns>The enumerator</returns>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.DefaultsDictionary`2.WillReturnDefaultValues">
+            <summary>
+            This boolean determines whether or not enumerators, iterators, etc will return both default and non-default values.
+            If true, then default values will be returned as long as a non-default value is not present.
+            If false, then only changed values will be returned in iterators.
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.DefaultsDictionary`2.NonDefaultValueCount">
+            <summary>
+            The number of non-default Key-Value Pairs present in this dictionary.
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.DefaultsDictionary`2.DefaultValueCount">
+            <summary>
+            The number of default Key-Value pairs present in this dictionary.
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.DefaultsDictionary`2.Keys">
+            <summary>
+            If WillReturnDefaultValues is false, this returns the set of non-default keys
+            If true, it returns the union of non-default and default keys
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.DefaultsDictionary`2.Values">
+            <summary>
+            Returns a list of the default
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.DefaultsDictionary`2.Item(`0)">
+            <summary>
+            Indexer for getting/setting Key-Value Pairs in the dictionary.
+            
+            Setting a Key-Value Pair causes a new non-default KVP to be set.
+            
+            Getting a Key-Value Pair first checks the non-default KVP set, and then checks the default KVP set.
+            </summary>
+            <param name="key">The key to set/get</param>
+            <returns>The value corresponding to the key</returns>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.DefaultsDictionary`2.Count">
+            <summary>
+            The number of Key-Value Pairs in this default dictionary. If WillReturnDefaultValues is true, then this is equal to both default and non-default counts.
+            If WillReturnDefaultValues is false, then Count == NonDefaultValueCount.
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.DefaultsDictionary`2.IsReadOnly">
+            <summary>
+            Returns false, as this dictionary is never read-only
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.Utilities.KsuAdapter">
+            <summary>
+            Collection of functions for working with the Kent State SrcML executables
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.KsuAdapter.MakeArgumentString(System.Collections.ObjectModel.Collection{System.String})">
+            <summary>
+            Combine the strings into a space seperated list that can be passed to a Process.
+            </summary>
+            <param name="arguments">the arguments to be combined</param>
+            <returns>the arguments combined into a string, separated by spaces</returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.KsuAdapter.GetLanguage(ABB.SrcML.Language)">
+            <summary>
+            Get the string representation of the Language enumeration
+            </summary>
+            <param name="language">a Language value</param>
+            <returns>The string representation of language</returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.KsuAdapter.GetLanguageFromString(System.String)">
+            <summary>
+            Helper method to get a Language value from a string. This is primarily used by obsolete SrcML.cs APIs to interface with newer code that does use the Language enumeration.
+            </summary>
+            <param name="language">a string to convert</param>
+            <returns>the Language value that corresponds to language.</returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.KsuAdapter.ConvertMappingToString(System.Collections.Generic.IDictionary{System.String,ABB.SrcML.Language})">
+            <summary>
+            Converts an extension mapping dictionary to a string that can be passed to src2srcml.exe.
+            </summary>
+            <param name="extensionMapping">An extension mapping dictionary</param>
+            <returns>a comma separated list of mappings of the form ("EXT=LANG")</returns>
+        </member>
+        <member name="T:ABB.SrcML.Utilities.ReadOnlyDictionary`2">
+            <summary>
+            ReadOnlyDictionary provides a read-only wrapper (similar to ReadOnlyCollection) for dictionaries.
+            If the dictionary is consistently accessed through this class, then NotSupportedExceptions will be thrown whenever the class is modified.
+            </summary>
+            <typeparam name="TKey">The key type</typeparam>
+            <typeparam name="TValue">The value type</typeparam>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ReadOnlyDictionary`2.#ctor(System.Collections.Generic.IDictionary{`0,`1})">
+            <summary>
+            Create a new ReadOnlyDictionary that with the given dictionary
+            </summary>
+            <param name="dictionary">The dictionary to provide a read-only interface for</param>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ReadOnlyDictionary`2.Add(`0,`1)">
+            <summary>
+            Not supported
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ReadOnlyDictionary`2.ContainsKey(`0)">
+            <summary>
+            True if this dictionary contains <paramref name="key"/>
+            </summary>
+            <param name="key">the key to check for</param>
+            <returns>true if present; false otherwise</returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ReadOnlyDictionary`2.Remove(`0)">
+            <summary>
+            Not supported
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ReadOnlyDictionary`2.TryGetValue(`0,`1@)">
+            <summary>
+            place the value corresponding to <paramref name="key"/> into <paramref name="value"/>.
+            </summary>
+            <param name="key">The key to search for</param>
+            <param name="value">the out parameter to place the result in</param>
+            <returns>true if the key is present; false otherwise</returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ReadOnlyDictionary`2.Add(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <summary>
+            Not supported
+            </summary>
+            <param name="item"></param>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ReadOnlyDictionary`2.Clear">
+            <summary>
+            Not supported
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ReadOnlyDictionary`2.Contains(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <summary>
+            Tests whether or not the Key-Value Pair <paramref name="item"/> is contained in this dictionary
+            </summary>
+            <param name="item">the key-value pair to check for</param>
+            <returns>true if present; false otherwise</returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ReadOnlyDictionary`2.CopyTo(System.Collections.Generic.KeyValuePair{`0,`1}[],System.Int32)">
+            <summary>
+            Copies the contents of this dictionary to <paramref name="array"/>, starting at <paramref name="arrayIndex"/>
+            </summary>
+            <param name="array">The array to copy the Key-Value Pairs to</param>
+            <param name="arrayIndex">The index to start copying to</param>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ReadOnlyDictionary`2.Remove(System.Collections.Generic.KeyValuePair{`0,`1})">
+            <summary>
+            Not supported
+            </summary>
+            <param name="item"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ReadOnlyDictionary`2.GetEnumerator">
+            <summary>
+            Returns an enumerator over the Key-Value Pairs in this dictionary
+            </summary>
+            <returns>An Enumerator</returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.ReadOnlyDictionary`2.System#Collections#IEnumerable#GetEnumerator">
+            <summary>
+            Returns an enumerator over the Key-Value Pairs in this dictionary
+            </summary>
+            <returns>An Enumerator</returns>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.ReadOnlyDictionary`2.Keys">
+            <summary>
+            a collection of the keys in this dictionary
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.ReadOnlyDictionary`2.Values">
+            <summary>
+            a collection of the values in this dictionary
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.ReadOnlyDictionary`2.Item(`0)">
+            <summary>
+            Returns the value corresponding to the key
+            The Setter is not supported.
+            </summary>
+            <param name="key">The key to search for</param>
+            <returns>the value corresponding to <paramref name="key"/></returns>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.ReadOnlyDictionary`2.Count">
+            <summary>
+            Returns the number of Key-Value Pairs in this dictionary
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.ReadOnlyDictionary`2.IsReadOnly">
+            <summary>
+            Returns true, as this dictionary is always read-only
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.SrcMLRuntimeException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.Utilities.SrcMLRuntimeException"/> class.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.SrcMLRuntimeException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.Utilities.SrcMLRuntimeException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.SrcMLRuntimeException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.Utilities.SrcMLRuntimeException"/> class.
+            </summary>
+            <param name="message">The message.</param>
+            <param name="innerException">The inner exception.</param>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.SrcMLRuntimeException.#ctor(System.String,System.String,ABB.SrcML.Utilities.ExecutableReturnValue)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.Utilities.SrcMLRuntimeException"/> class.
+            </summary>
+            <param name="pathToExecutable">The path to executable.</param>
+            <param name="arguments">The arguments.</param>
+            <param name="returnValue">The return value.</param>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.SrcMLRuntimeException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:ABB.SrcML.Utilities.SrcMLRuntimeException"/> class.
+            </summary>
+            <param name="serializationInfo">The serialization info.</param>
+            <param name="context">The context.</param>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.SrcMLRuntimeException.ReturnValue">
+            <summary>
+            Gets the executable return value
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.SrcMLRuntimeException.ErrorMessage">
+            <summary>
+            Gets the error message that corresponds to <see cref="T:ABB.SrcML.Utilities.ExecutableReturnValue"/>
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.Utilities.SrcMLRuntimeException.ArgumentString">
+            <summary>
+            Gets the argument string passed to the srcML executable
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.Utilities.VisualStudioProjectReader">
+            <summary>
+            Reader class for reading Visual Studo project files
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.VisualStudioProjectReader.ReadProjectFile(System.String)">
+            <summary>
+            read the source files from the given Visual Studio project
+            </summary>
+            <param name="fileName">the filename for the Visual Studio project</param>
+            <returns>an array of source files</returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.VisualStudioProjectReader.ReadCSProject(System.String)">
+            <summary>
+            Parse a C# project file
+            </summary>
+            <param name="fileName">the path to the C# project file</param>
+            <returns>an array of source files</returns>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.VisualStudioProjectReader.ReadVCProject(System.String)">
+            <summary>
+            Parse a Visual C++ projecct file
+            </summary>
+            <param name="fileName">the path to the VC++ project file</param>
+            <returns>an array of source files</returns>
+        </member>
+        <member name="T:ABB.SrcML.XmlHelper">
+            <summary>
+            Collection of static functions for working with XML.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.XmlHelper.StreamElements(System.String,System.Xml.Linq.XName,System.Int32)">
+            <summary>
+            Stream elements that have the given name.
+            This uses the technique defined http://msdn.microsoft.com/en-us/library/bb387008(v=vs.90).aspx
+            with modifications from here: http://social.msdn.microsoft.com/Forums/en/xmlandnetfx/thread/da366348-f209-433f-bb3b-8b5615409fe0
+            </summary>
+            <param name="fileName">the filename to stream elements from</param>
+            <param name="name">The XName to find in the XML document</param>
+            <param name="minimumDepth">The minimum depth to find elements at in the DOM tree</param>
+            <returns>elements from this XML document with name <paramref name="name"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.XmlHelper.ReadWithLineInfo(System.Xml.XmlReader,System.Xml.IXmlLineInfo)">
+            <summary>
+            Read an XNode from the given XmlReader and LineInfo object. If available, line info will be added to XElement.
+            This technique is adapted from here: http://blogs.msdn.com/b/mikechampion/archive/2006/09/10/748408.aspx
+            </summary>
+            <param name="reader">The XmlReader to read from</param>
+            <param name="lineInfo">This should be <paramref name="reader"/> cast as an <see cref="T:System.Xml.IXmlLineInfo"/></param>
+            <returns>an XNode with line information if present</returns>
+            <seealso cref="M:System.Xml.Linq.XNode.ReadFrom(System.Xml.XmlReader)">This function replaces XNode.ReadFrom</seealso>
+        </member>
+    </members>
+</doc>

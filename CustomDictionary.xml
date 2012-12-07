@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Dictionary>
+  <Words>
+    <Recognized>
+      <Word>Src</Word>
+      <Word>Diff</Word>
+      <Word>Ksu</Word>
+      <Word>decl</Word>
+      <Word>elif</Word>
+      <Word>Endif</Word>
+      <Word>expr</Word>
+      <Word>ifdef</Word>
+      <Word>ifndef</Word>
+      <Word>incr</Word>
+      <Word>param</Word>
+      <Word>typedef</Word>
+      <Word>undef</Word>
+      
+    </Recognized>
+    <Unrecognized />
+    <Deprecated />
+    <Compound />
+    <DiscreteExceptions>
+      <Term>SrcDiff</Term>
+      <Term>srcML</Term>
+    </DiscreteExceptions>
+  </Words>
+  <Acronyms>
+    <CasingExceptions>
+      <Acronym>ABB</Acronym>
+    </CasingExceptions>
+  </Acronyms>
+</Dictionary>
