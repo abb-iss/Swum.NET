@@ -31,9 +31,15 @@ namespace ABB.Swum.Utilities
         /// </summary>
         static SwumConfiguration()
         {
-            //string configFile = Assembly.GetExecutingAssembly().Location + ".config";
-            //Console.WriteLine("File {0} exists: {1}", configFile, File.Exists(configFile));
-            config = ConfigurationManager.OpenExeConfiguration(Assembly.GetExecutingAssembly().Location);
+            string assemblyPath;
+            Assembly currentAssembly = Assembly.GetExecutingAssembly();
+            if(!string.IsNullOrWhiteSpace(currentAssembly.CodeBase)) {
+                assemblyPath = new Uri(currentAssembly.CodeBase).LocalPath;
+            } else {
+                assemblyPath = currentAssembly.Location;
+            }
+            
+            config = ConfigurationManager.OpenExeConfiguration(assemblyPath);
         }
 
         /// <summary>
