@@ -27,7 +27,7 @@
   </Target> -->
 
   <Target Name="Test" DependsOnTargets="Build" Condition="Exists('@(TestRunner)')">
-    <Exec Command="@(TestRunner) ABB.Swum.Tests\bin\$(Configuration)\ABB.Swum.Tests.dll /noshadow" />
+    <Exec Command="@(TestRunner) ABB.Swum.Tests\bin\$(Configuration)\ABB.Swum.Tests.dll" />
   </Target>
   
   <Import Project="External\MSBuild\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"
