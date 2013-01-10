@@ -172,17 +172,25 @@ namespace ABB.Swum.Nodes {
         /// <summary>
         /// Returns the first word in the phrase.
         /// </summary>
-        /// <returns>The first word in the phrase.</returns>
+        /// <returns>The first word in the phrase.  If the phrase contains no words, returns null.</returns>
         public WordNode FirstWord() {
-            return Words[0];
+            if(Words.Any()) {
+                return Words.First();
+            } else {
+                return null;
+            }
         }
 
         /// <summary>
         /// Returns the last word in the phrase.
         /// </summary>
-        /// <returns>The last word in the phrase.</returns>
+        /// <returns>The last word in the phrase. If the phrase contains no words, returns null.</returns>
         public WordNode LastWord() {
-            return Words.Last();
+            if(Words.Any()) {
+                return Words.Last();
+            } else {
+                return null;
+            }
         }
 
         /// <summary>

@@ -67,9 +67,9 @@ namespace SwumResearch
             else if (string.Equals(args[0], "Random", StringComparison.InvariantCultureIgnoreCase))
             {
                 c = new RandomCommand();
-            }
-            else
-            {
+            } else if(string.Equals(args[0], "swum", StringComparison.InvariantCultureIgnoreCase)) {
+                c = new SwumCommand();
+            } else {
                 PrintCommands();
             }
 
@@ -105,6 +105,7 @@ namespace SwumResearch
             cl.Add(new AnalyzeFunctionsCommand());
             cl.Add(new CountProgramWordsCommand());
             cl.Add(new RandomCommand());
+            cl.Add(new SwumCommand());
             CommandLineParser.PrintCommands(cl);
         }
     }
@@ -535,4 +536,129 @@ namespace SwumResearch
         }
     }
 
+    [Description("Computes SWUM for the methods and fields in the given srcML file.")]
+    class SwumCommand : Command {
+        [Required]
+        [Description("The srcML file.")]
+        public string File { get; set; }
+
+        [Description("The word count file to use for the Samurai splitter.")]
+        public string CountFile { get; set; }
+
+        [Description("Indicates the program should pause before and after swum construction.")]
+        public bool Pause { get; set; }
+
+        private Dictionary<string, MethodDeclarationNode> methodSwum;
+        private Dictionary<string, FieldDeclarationNode> fieldSwum;
+
+        public SwumCommand() {
+            methodSwum = new Dictionary<string, MethodDeclarationNode>();
+            fieldSwum = new Dictionary<string, FieldDeclarationNode>();
+        }
+
+        public override void Execute() {
+            if(Pause) {
+                Console.WriteLine("Ready to begin (press Enter)");
+                Console.ReadLine();
+            }
+
+            Console.WriteLine("Using srcML file {0}", this.File);
+
+            var builder = new UnigramSwumBuilder();
+            if(!string.IsNullOrWhiteSpace(CountFile)) {
+                Console.WriteLine("Initializing SamuraiIdSplitter using word count file {0}", this.CountFile);
+                builder.Splitter = new SamuraiIdSplitter(CountFile);
+            }
+            Console.WriteLine("SwumBuilder initialized");
+
+            int methodCount = 0, fieldCount = 0;
+
+            {
+                SrcMLFile testFile = new SrcMLFile(this.File);
+                var functionTypes = new XName[] {SRC.Function, SRC.Constructor, SRC.Destructor};
+                foreach(XElement file in testFile.FileUnits) {
+                    string fileName = file.Attribute("filename").Value;
+                    Console.WriteLine("File {0}:", fileName);
+
+                    //compute SWUM on each function
+                    foreach(var func in (from func in file.Descendants()
+                                         where functionTypes.Contains(func.Name)
+                                         select func)) {
+                        var nameElement = SrcMLHelper.GetNameForMethod(func);
+                        if(nameElement != null) {
+                            string funcName = nameElement.Value;
+                            string funcSignature = SrcMLElement.GetMethodSignature(func);
+                            //Console.WriteLine("<{0}> {1}", func.Name.LocalName, funcSignature);
+
+                            MethodDeclarationNode mdn = new MethodDeclarationNode(funcName, ContextBuilder.BuildMethodContext(func));
+                            builder.ApplyRules(mdn);
+                            methodSwum[string.Format("{0}:{1}", fileName, funcSignature)] = mdn;
+                            //Console.WriteLine(mdn.ToString() + Environment.NewLine);
+
+                            methodCount++;
+                        }
+                    }
+
+                    //compute SWUM on each field
+                    foreach(var fieldDecl in (from declStmt in file.Descendants(SRC.DeclarationStatement)
+                                          where !declStmt.Ancestors().Any(n => functionTypes.Contains(n.Name))
+                                          select declStmt.Element(SRC.Declaration))) {
+
+                        int declPos = 1;
+                        foreach(var nameElement in fieldDecl.Elements(SRC.Name)) {
+
+                            string fieldName = nameElement.Elements(SRC.Name).Any() ? nameElement.Elements(SRC.Name).Last().Value : nameElement.Value;
+                            //Console.WriteLine("Field: {0}, Name: {1}", fieldDecl.Value, fieldName);
+
+                            FieldDeclarationNode fdn = new FieldDeclarationNode(fieldName, ContextBuilder.BuildFieldContext(fieldDecl));
+                            builder.ApplyRules(fdn);
+                            fieldSwum[string.Format("{0}:{1}:{2}", fileName, fieldDecl.Value, declPos)] = fdn;
+                            //Console.WriteLine(fdn.ToString() + Environment.NewLine);
+
+                            fieldCount++;
+                            declPos++;
+                        }
+                    }
+                }
+                
+            } 
+
+            GC.Collect();
+
+            Console.WriteLine("{0} functions analyzed", methodCount);
+            Console.WriteLine("{0} functions in dictionary", methodSwum.Count);
+            Console.WriteLine("{0} fields analyzed", fieldCount);
+            Console.WriteLine("{0} fields in dictionary", fieldSwum.Count);
+
+            if(Pause) {
+                Console.WriteLine("Finished building SWUM (press Enter)");
+                Console.ReadLine();
+            }
+        }
+
+        private string GetMethodSignature(XElement methodElement) {
+            var blockElement = methodElement.Element(SRC.Block);
+            StringBuilder sig = new StringBuilder();
+            foreach(var n in blockElement.NodesBeforeSelf()) {
+                if(n.NodeType == XmlNodeType.Element) {
+                    sig.Append(((XElement)n).Value);
+                } else if(n.NodeType == XmlNodeType.Text || n.NodeType == XmlNodeType.Whitespace || n.NodeType == XmlNodeType.SignificantWhitespace) {
+                    sig.Append(((XText)n).Value);
+                }
+            }
+            return sig.ToString().TrimEnd();
+        }
+
+        private string GetVariableName(XElement declElement) {
+            var nameElement = declElement.Element(SRC.Name);
+            if(nameElement == null) {
+                return string.Empty;
+            }
+            if(nameElement.Elements(SRC.Name).Any()) {
+                return nameElement.Elements(SRC.Name).Last().Value;
+            } else {
+                return nameElement.Value;
+            }
+        }
+    }
 }

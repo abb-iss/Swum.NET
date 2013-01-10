@@ -95,9 +95,10 @@ namespace ABB.Swum
                     mdn.ParsedName[0].Tag = PartOfSpeechTag.Preposition;
                     Console.Error.WriteLine("LeadingPrepositionRule.ConstructSwum(): found node with untagged preposition: {0}", mdn);
                 }
-                this.PosTagger.TagNounPhrase(mdn.ParsedName, 1, mdn.ParsedName.Size() - 1);
+                if(mdn.ParsedName.Size() > 1) {
+                    this.PosTagger.TagNounPhrase(mdn.ParsedName, 1, mdn.ParsedName.Size() - 1);
+                }
                 mdn.CreateThemeFromPhrases(mdn.Preamble, mdn.ParsedName);
-                //TODO: setting the Theme might need to account for an empty preamble
 
                 //TODO: from Emily, make name proper SecondaryArg
 

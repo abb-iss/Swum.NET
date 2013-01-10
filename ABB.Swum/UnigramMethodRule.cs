@@ -467,7 +467,7 @@ namespace ABB.Swum
                     {
                         node.AddUnknownArgument(node.DeclaringClass);
                     }
-                    if (node.UnknownArguments.Count > 0)
+                    if (node.UnknownArguments != null && node.UnknownArguments.Count > 0)
                     {
                         node.Theme = node.UnknownArguments[0];
                         node.UnknownArguments.RemoveAt(0);
@@ -483,9 +483,8 @@ namespace ABB.Swum
 
             //do cleanup
             node.AddUnknownArguments(unusedArgs);
-            if (node.ReturnType.Name.ToLower() != "void")
-            {
-//TODO: should this be done for primitive return types? SetDefaultUnknownArguments() excludes them
+            if(node.ReturnType != null && node.ReturnType.Name.ToLower() != "void") {
+                //TODO: should this be done for primitive return types? SetDefaultUnknownArguments() excludes them
                 node.AddUnknownArgument(node.ReturnType);
             }
 
@@ -641,7 +640,7 @@ namespace ABB.Swum
             {
                 mdn.AddUnknownArgument(mdn.DeclaringClass);
             }
-            if (!mdn.ReturnType.IsPrimitive)
+            if (mdn.ReturnType != null && !mdn.ReturnType.IsPrimitive)
             {
                 mdn.AddUnknownArgument(mdn.ReturnType);
             }
@@ -698,9 +697,9 @@ namespace ABB.Swum
         {
             if (formalParameters == null) { return false; }
 
-            foreach (VariableDeclarationNode vdn in formalParameters)
-            {
-                if (vdn.Type.ParsedName.LastWord().Text.ToLower() == "event")
+            foreach (VariableDeclarationNode vdn in formalParameters) {
+                WordNode last = vdn.Type.ParsedName.LastWord();
+                if (last != null && last.Text != null && last.Text.ToLower() == "event")
                 {
 //TODO: is this sufficient for non-Java languages?
 //for C#, should match against EventArgs

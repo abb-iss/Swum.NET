@@ -1095,6 +1095,23 @@
             <param name="language">The language to parse the source file as.</param>
             <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
         </member>
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLFromFiles(System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <summary>
+            Generates a SrcML document from a collection of source files. The languages will be inferred from the file extensions.
+            </summary>
+            <param name="sourceFileNames">The source files to generate SrcML from.</param>
+            <param name="xmlFileName">The file name to write the resulting XML to.</param>
+            <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLFromFiles(System.Collections.Generic.IEnumerable{System.String},System.String,ABB.SrcML.Language)">
+            <summary>
+            Generates a SrcML document from a collection of source files using the specified language.
+            </summary>
+            <param name="sourceFileNames">The source files to generate SrcML from.</param>
+            <param name="xmlFileName">The file name to write the resulting XML to.</param>
+            <param name="language">The language to parse the source files as.</param>
+            <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
+        </member>
         <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLFromString(System.String)">
             <summary>
             Generate SrcML from a given string of source code. The source code will be parsed as C++.
@@ -1116,7 +1133,6 @@
             This is a utility class for generating SrcML files. It has functions that use the original SrcML executables,
             and some native C# functions for generating SrcML.
             </summary>
-            TODO split the SrcML class into src2srcml &amp; srcml2src runner classes
         </member>
         <member name="F:ABB.SrcML.SrcML.Src2SrcMLExecutableName">
             <summary>executable name for src2srcml executable</summary>
@@ -1380,6 +1396,18 @@
             <param name="xmlFileName">Name of the XML file.</param>
             <param name="outputFileName">Name of the output file.</param>
             <param name="unitIndex">Index of the unit.</param>
+        </member>
+        <member name="T:ABB.SrcML.SrcMLElement">
+            <summary>
+            Contains static utility methods that act upon srcML XElements.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLElement.GetMethodSignature(System.Xml.Linq.XElement)">
+            <summary>
+            Gets the method signature from the method definition srcML element.
+            </summary>
+            <param name="methodElement">The srcML method element to extract the signature from.</param>
+            <returns>The method signature</returns>
         </member>
         <member name="T:ABB.SrcML.SrcMLException">
             <summary>

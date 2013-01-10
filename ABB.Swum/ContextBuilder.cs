@@ -283,13 +283,12 @@ namespace ABB.Swum
         /// <param name="typeElement">A type srcML element.</param>
         /// <param name="isPrimitive">An output parameter indicating whether the type is a primitive data type.</param>
         /// <returns>The type name.</returns>
-        /// <exception cref="System.ArgumentNullException">typeElement is null.</exception>
         /// <exception cref="System.ArgumentException">typeElement does not represent a type element.</exception>
         public static string ConstructTypeName(XElement typeElement, out bool isPrimitive)
         {
-            if (typeElement == null)
-            {
-                throw new ArgumentNullException("typeElement");
+            if (typeElement == null) {
+                isPrimitive = false;
+                return string.Empty;
             }
             else if (typeElement.Name != SRC.Type)
             {
