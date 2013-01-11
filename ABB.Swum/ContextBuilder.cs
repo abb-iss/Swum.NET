@@ -24,23 +24,24 @@ namespace ABB.Swum
     /// <summary>
     /// Contains various helper functions to build context objects from SrcML.
     /// </summary>
-    public static class ContextBuilder
-    {
-        private static string[] primitiveTypes = { "_Bool",
-                                                     "bool",
-                                                     "char",
-                                                     "int",
-                                                     "signed",
-                                                     "unsigned",
-                                                     "short",
-                                                     "long",
-                                                     "float",
-                                                     "double",
-                                                     "_Complex",
-                                                     "complex",
-                                                     "wchar_t",
-                                                     "char16_t",
-                                                     "char32_t"};
+    public static class ContextBuilder {
+        private static readonly string[] primitiveTypes = {
+                                                              "_Bool",
+                                                              "bool",
+                                                              "char",
+                                                              "int",
+                                                              "signed",
+                                                              "unsigned",
+                                                              "short",
+                                                              "long",
+                                                              "float",
+                                                              "double",
+                                                              "_Complex",
+                                                              "complex",
+                                                              "wchar_t",
+                                                              "char16_t",
+                                                              "char32_t"
+                                                          };
 
 
         /// <summary>
@@ -260,6 +261,7 @@ namespace ABB.Swum
 
             return new MethodContext("int", true, className, args, false, false, false);
         }
+
         /// <summary>
         /// Extracts the type name from a type srcML element. A type element may contain several name and type modifier elements.
         /// This function returns only the actual type name, ignoring any access modifiers, such as static, private or public.
@@ -267,14 +269,12 @@ namespace ABB.Swum
         /// </summary>
         /// <param name="typeElement">A type srcML element.</param>
         /// <returns>The type name.</returns>
-        /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="System.ArgumentException">typeElement does not represent a type element.</exception>
-        public static string ConstructTypeName(XElement typeElement)
-        {
+        public static string ConstructTypeName(XElement typeElement) {
             bool dummy;
             return ConstructTypeName(typeElement, out dummy);
         }
-        
+
         /// <summary>
         /// Extracts the type name from a type srcML element. A type element may contain several name and type modifier elements.
         /// This function returns only the actual type name, ignoring any access modifiers, such as static, private or public.
@@ -284,14 +284,11 @@ namespace ABB.Swum
         /// <param name="isPrimitive">An output parameter indicating whether the type is a primitive data type.</param>
         /// <returns>The type name.</returns>
         /// <exception cref="System.ArgumentException">typeElement does not represent a type element.</exception>
-        public static string ConstructTypeName(XElement typeElement, out bool isPrimitive)
-        {
-            if (typeElement == null) {
+        public static string ConstructTypeName(XElement typeElement, out bool isPrimitive) {
+            if(typeElement == null) {
                 isPrimitive = false;
                 return string.Empty;
-            }
-            else if (typeElement.Name != SRC.Type)
-            {
+            } else if(typeElement.Name != SRC.Type) {
                 throw new ArgumentException(string.Format("The passed XElement must represent a <type> element. Received a <{0}> element.", typeElement.Name.ToString()), "typeElement");
             }
 
@@ -299,63 +296,49 @@ namespace ABB.Swum
             StringBuilder typeName = new StringBuilder();
             isPrimitive = false;
             XElement typeNameElement;
-            if (typeElement.Elements(SRC.Name).Count() > 0)
-            {
+            if(typeElement.Elements(SRC.Name).Any()) {
                 //the Type element may actually contain several Name elements because access modifiers (e.g. static, private, etc.) get tagged as Names
-                //This line assumes that the last Name element is the actual name
-                typeNameElement = typeElement.Elements(SRC.Name).Last();
+                //We assume that all keywords appear before the actual type name, except for const, which can appear afterwards
+                //Therefore, grab the last non-const name element
+                typeNameElement = typeElement.Elements(SRC.Name).Last(ne => ne.Value != "const");
 
-                if (primitiveTypes.Contains(typeNameElement.Value))
-                {
+                if(primitiveTypes.Contains(typeNameElement.Value)) {
                     //last name element is a primitive type, look for more primitive names preceding it
                     //e.g. "unsigned short int"
                     isPrimitive = true;
                     typeName.Append(typeNameElement.Value);
-                    foreach (var currElem in typeNameElement.ElementsBeforeSelf().Reverse())
-                    {
-                        if (currElem.Name == SRC.Name && primitiveTypes.Contains(currElem.Value))
-                        {
+                    foreach(var currElem in typeNameElement.ElementsBeforeSelf().Reverse()) {
+                        if(currElem.Name == SRC.Name && primitiveTypes.Contains(currElem.Value)) {
                             typeName.Insert(0, currElem.Value + " ");
-                        }
-                        else
-                        {
+                        } else {
                             break;
                         }
                     }
-                }
-                else
-                {
+                } else {
                     //A name element might contain several child name elements, in the case where the name is qualified
                     //E.g. <Namespace>::<typeName>
                     //This grabs the last child name element, assuming that it is the actual type name
                     var childNames = typeNameElement.Elements(SRC.Name);
-                    if (childNames != null && childNames.Count() > 0)
-                    {
+                    if(childNames != null && childNames.Any()) {
                         typeNameElement = childNames.Last();
                     }
 
                     typeName.Append(typeNameElement.Value);
                 }
-            }
-            else
-            {
+            } else {
                 //It's possible to have zero name elements, in the case of "..." for variable length argument lists.
                 typeNameElement = null;
             }
 
             //append any type modifiers that are present, e.g. '*' or '&'
             IEnumerable<XElement> typeModifierCollection;
-            if (typeNameElement != null)
-            {
+            if(typeNameElement != null) {
                 typeModifierCollection = typeNameElement.ElementsAfterSelf(TYPE.Modifier);
-            }
-            else
-            {
+            } else {
                 //no type name, probably because type is "...", so append all modifiers
                 typeModifierCollection = typeElement.Elements(TYPE.Modifier);
             }
-            foreach (var typeModifier in typeModifierCollection)
-            {
+            foreach(var typeModifier in typeModifierCollection) {
                 typeName.Append(typeModifier.Value);
             }
 

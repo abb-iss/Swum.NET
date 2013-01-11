@@ -545,8 +545,11 @@ namespace SwumResearch
         [Description("The word count file to use for the Samurai splitter.")]
         public string CountFile { get; set; }
 
-        [Description("Indicates the program should pause before and after swum construction.")]
+        [Description("Pause before and after swum construction.")]
         public bool Pause { get; set; }
+
+        [Description("Print out the generated SWUM for each method and field.")]
+        public bool PrintSwum { get; set; }
 
         private Dictionary<string, MethodDeclarationNode> methodSwum;
         private Dictionary<string, FieldDeclarationNode> fieldSwum;
@@ -588,12 +591,16 @@ namespace SwumResearch
                         if(nameElement != null) {
                             string funcName = nameElement.Value;
                             string funcSignature = SrcMLElement.GetMethodSignature(func);
-                            //Console.WriteLine("<{0}> {1}", func.Name.LocalName, funcSignature);
+                            if(PrintSwum) {
+                                Console.WriteLine("<{0}> {1}", func.Name.LocalName, funcSignature);
+                            }
 
                             MethodDeclarationNode mdn = new MethodDeclarationNode(funcName, ContextBuilder.BuildMethodContext(func));
                             builder.ApplyRules(mdn);
                             methodSwum[string.Format("{0}:{1}", fileName, funcSignature)] = mdn;
-                            //Console.WriteLine(mdn.ToString() + Environment.NewLine);
+                            if(PrintSwum) {
+                                Console.WriteLine(mdn.ToString() + Environment.NewLine);
+                            }
 
                             methodCount++;
                         }
@@ -608,12 +615,16 @@ namespace SwumResearch
                         foreach(var nameElement in fieldDecl.Elements(SRC.Name)) {
 
                             string fieldName = nameElement.Elements(SRC.Name).Any() ? nameElement.Elements(SRC.Name).Last().Value : nameElement.Value;
-                            //Console.WriteLine("Field: {0}, Name: {1}", fieldDecl.Value, fieldName);
+                            if(PrintSwum) {
+                                Console.WriteLine("Field: {0}, Name: {1}", fieldDecl.Value, fieldName);
+                            }
 
                             FieldDeclarationNode fdn = new FieldDeclarationNode(fieldName, ContextBuilder.BuildFieldContext(fieldDecl));
                             builder.ApplyRules(fdn);
                             fieldSwum[string.Format("{0}:{1}:{2}", fileName, fieldDecl.Value, declPos)] = fdn;
-                            //Console.WriteLine(fdn.ToString() + Environment.NewLine);
+                            if(PrintSwum) {
+                                Console.WriteLine(fdn.ToString() + Environment.NewLine);
+                            }
 
                             fieldCount++;
                             declPos++;
