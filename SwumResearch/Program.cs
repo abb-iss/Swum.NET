@@ -461,7 +461,7 @@ namespace SwumResearch
 
                 //print all the function names
                 foreach (var func in (from func in file.Descendants()
-                                      where functionTypes.Any(c => c == func.Name) && (rand.Next(100) < this.SamplePercent)
+                                      where functionTypes.Any(c => c == func.Name) && !func.Ancestors(SRC.Declaration).Any() && (rand.Next(100) < this.SamplePercent)
                                       select func))
                 {
                     string funcName = SrcMLHelper.GetNameForMethod(func).Value;
@@ -585,7 +585,7 @@ namespace SwumResearch
 
                     //compute SWUM on each function
                     foreach(var func in (from func in file.Descendants()
-                                         where functionTypes.Contains(func.Name)
+                                         where functionTypes.Contains(func.Name) && !func.Ancestors(SRC.Declaration).Any()
                                          select func)) {
                         var nameElement = SrcMLHelper.GetNameForMethod(func);
                         if(nameElement != null) {

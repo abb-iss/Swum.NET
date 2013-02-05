@@ -4,6 +4,12 @@
         <name>ABB.SrcML</name>
     </assembly>
     <members>
+        <member name="M:ABB.SrcML.AbstractArchive.WriteXmlnsAttributes(System.Xml.XmlWriter)">
+            <summary>
+            Write attribute strings for each SrcML namespace to the given XmlWriter. This should be called immediately after XmlWriter.WriteStartElement.
+            </summary>
+            <param name="writer">Instance of XmlWriter to write to.</param>
+        </member>
         <member name="T:ABB.SrcML.AbstractDocument">
             <summary>
             Provides base functionality for various srcML documents.
@@ -165,6 +171,178 @@
             <param name="name">A <see cref="T:ABB.SrcML.SRC"/> element.</param>
             <returns>The corresponding declaration, null if not found.</returns>
         </member>
+        <member name="T:ABB.SrcML.IFileMonitor">
+            <summary>
+            This interface is designed for all events that can be raised from SrcML.NET.
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.FileEventType">
+            <summary>
+            Event type enumeration.
+            </summary>
+        </member>
+        <member name="T:ABB.SrcML.FileEventRaisedArgs">
+            <summary>
+            Event data of SrcML.NET events.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.#ctor">
+            <summary>
+            Creates a new SrcMLGenerator.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.#ctor(System.String)">
+            <summary>
+            Creates a new SrcMLGenerator
+            </summary>
+            <param name="defaultExecutableDirectory">The directory containing the default srcml executables to use.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.#ctor(System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Creates a new SrcMLGenerator
+            </summary>
+            <param name="defaultExecutableDirectory">The directory containing the default srcml executables to use.</param>
+            <param name="namespaceArguments">The namespace arguments to use when converting to SrcML.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.RegisterExecutable(System.String,System.Collections.Generic.IEnumerable{ABB.SrcML.Language})">
+            <summary>
+            Registers a src2srcml executable to use for the given languages.
+            </summary>
+            <param name="executableDirectory">The directory containing the src2srcml executable to use.</param>
+            <param name="languages">A collection of the Languages that should be parsed by this executable.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.RegisterExecutable(System.String,System.Collections.Generic.IEnumerable{ABB.SrcML.Language},System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Registers a src2srcml executable to use for the given languages.
+            </summary>
+            <param name="executableDirectory">The directory containing the src2srcml executable to use.</param>
+            <param name="languages">A collection of the Languages that should be parsed by this executable.</param>
+            <param name="namespaceArguments">The namespace arguments to use when converting to SrcML.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.DetectNonDefaultExecutables">
+            <summary>
+            Scans the directory containing the default src2srcml executable and looks for subdirectories corresponding to defined languages.
+            Each of these is registered for the given language.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.GenerateSrcMLFromFile(System.String,System.String)">
+            <summary>
+            Generate a SrcML document from a single source file. The language will be inferred from the extension.
+            </summary>
+            <param name="sourceFileName">The path of the source file to convert.</param>
+            <param name="xmlFileName">The file name to write the resulting XML to.</param>
+            <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.GenerateSrcMLFromFile(System.String,System.String,ABB.SrcML.Language)">
+            <summary>
+            Generate a SrcML document from a single source file with the specified language.
+            </summary>
+            <param name="sourceFileName">The path to the source file to convert.</param>
+            <param name="xmlFileName">The file name to write the resulting XML to.</param>
+            <param name="language">The language to parse the source file as.</param>
+            <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.GenerateSrcMLAndXElementFromFile(System.String,System.String)">
+            <summary>
+            Generate a SrcML document from a single source file, and return an XElement for it. 
+            The source language will be inferred from the file extension.
+            </summary>
+            <param name="sourceFileName">The path of the source file to convert.</param>
+            <param name="xmlFileName">The file name to write the resulting XML to.</param>
+            <returns>The root XElement for <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.GenerateSrcMLAndStringFromFile(System.String,System.String)">
+            <summary>
+            Generate a SrcML document from a single source file, and return the xml as a string.
+            The source language will be inferred from the file extension.
+            </summary>
+            <param name="sourceFileName">The path of the source file to convert.</param>
+            <param name="xmlFileName">The file name to write the resulting XML to.</param>
+            <returns>A string containing the xml for the file.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.GenerateSrcMLFromFiles(System.Collections.Generic.IEnumerable{System.String},System.String)">
+            <summary>
+            Generates a SrcML document from a collection of source files. The language(s) will be inferred from the file extensions.
+            </summary>
+            <param name="sourceFileNames">The source files to generate SrcML from.</param>
+            <param name="xmlFileName">The file name to write the resulting XML to.</param>
+            <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.GenerateSrcMLFromFiles(System.Collections.Generic.IEnumerable{System.String},System.String,ABB.SrcML.Language)">
+            <summary>
+            Generates a SrcML document from a collection of source files using the specified language.
+            </summary>
+            <param name="sourceFileNames">The source files to generate SrcML from.</param>
+            <param name="xmlFileName">The file name to write the resulting XML to.</param>
+            <param name="language">The language to parse the source files as.</param>
+            <returns>A SrcMLFile for <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.GenerateSrcMLFromDirectory(System.String,System.String)">
+            <summary>
+            Generate a SrcML document from the given path and place it in the XML file.
+            </summary>
+            <param name="directoryPath">The directory path.</param>
+            <param name="xmlFileName">The path of the xml file.</param>
+            <returns>A SrcMLFile that points at <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.GenerateSrcMLFromDirectory(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Generates a SrcML document from the given path and place it in the XML file. The XML document will only contain files not present in <paramref name="filesToExclude"/>.
+            </summary>
+            <param name="directoryPath">The directory path.</param>
+            <param name="xmlFileName">The path of the xml file.</param>
+            <param name="filesToExclude">A collection of files to exclude from <paramref name="xmlFileName"/>.</param>
+            <returns>A SrcMLFile that points at <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.GenerateSrcMLFromDirectory(System.String,System.String,ABB.SrcML.Language)">
+            <summary>
+            Generate a SrcML document from the given path and place it in the XML file. The file will only contain source files classified as <paramref name="languageFilter"/>.
+            </summary>
+            <param name="directoryPath">The directory path.</param>
+            <param name="xmlFileName">The path of the xml file.</param>
+            <param name="languageFilter">The language to include.</param>
+            <returns>A SrcMLFile that points at <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.GenerateSrcMLFromDirectory(System.String,System.String,System.Collections.Generic.IEnumerable{System.String},ABB.SrcML.Language)">
+            <summary>
+            Generate a SrcML document from the given path and place it in the XML file. The file will only contain source files classified as <paramref name="languageFilter"/>.
+            </summary>
+            <param name="directoryPath">The directory path.</param>
+            <param name="xmlFileName">The path of the xml file.</param>
+            <param name="filesToExclude">A collection of files to exclude from <paramref name="xmlFileName"/>.</param>
+            <param name="languageFilter">The language to include.</param>
+            <returns>A SrcMLFile that points at <paramref name="xmlFileName"/>.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.GenerateSrcMLFromString(System.String)">
+            <summary>
+            Generate SrcML from a given string of source code. The source code will be parsed as C++.
+            </summary>
+            <param name="source">A string containing the source code to parse.</param>
+            <returns>XML representing the source.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLGenerator.GenerateSrcMLFromString(System.String,ABB.SrcML.Language)">
+            <summary>
+            Generate SrcML from a given string of source code.
+            </summary>
+            <param name="source">A string containing the source code to parse.</param>
+            <param name="language">The language to parse the string as. Language.Any is not valid.</param>
+            <returns>XML representing the source.</returns>
+        </member>
+        <member name="P:ABB.SrcML.SrcMLGenerator.ExtensionMapping">
+            <summary>
+            Maps file extensions to the languages they will be parsed as.
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.SrcMLGenerator.NonDefaultExecutables">
+            <summary>
+            Maps Languages to the Src2SrcMLRunner that will parse it, if different from the default.
+            </summary>
+        </member>
+        <member name="P:ABB.SrcML.SrcMLGenerator.SupportedLanguages">
+            <summary>
+            The languages that can be parsed by this SrcMLGenerator.
+            </summary>
+        </member>
         <member name="T:ABB.SrcML.ITransform">
             <summary>
             Interface for SrcML transformations.
@@ -194,7 +372,7 @@
             </summary>
         </member>
         <member name="F:ABB.SrcML.Language.Any">
-            <summary>Indicates that srcML should choose the language based on extension.</summary>
+            <summary>Indicates that srcML should choose the language based on file extension.</summary>
         </member>
         <member name="F:ABB.SrcML.Language.CPlusPlus">
             <summary>Indicates that srcML should use the C++ language.</summary>
@@ -207,6 +385,9 @@
         </member>
         <member name="F:ABB.SrcML.Language.AspectJ">
             <summary>Indicates that srcML should use the Aspect-J language.</summary>
+        </member>
+        <member name="F:ABB.SrcML.Language.CSharp">
+            <summary>Indicates that srcML should use the C# language.</summary>
         </member>
         <member name="T:ABB.SrcML.LineInfo">
             <summary>
@@ -574,6 +755,11 @@
             markup for the index tag
             </summary>
         </member>
+        <member name="F:ABB.SrcML.SRC.Package">
+            <summary>
+            markup for the java package tag
+            </summary>
+        </member>
         <member name="F:ABB.SrcML.SRC.DeclarationStatement">
             <summary>
             markup for the decl_stmt tag
@@ -774,6 +960,21 @@
             markup for the destructor_decl tag
             </summary>
         </member>
+        <member name="F:ABB.SrcML.SRC.Super">
+            <summary>
+            markup for the super tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Implements">
+            <summary>
+            markup for the implements java tag
+            </summary>
+        </member>
+        <member name="F:ABB.SrcML.SRC.Import">
+            <summary>
+            markup for the import java tag
+            </summary>
+        </member>
         <member name="F:ABB.SrcML.SRC.Try">
             <summary>
             markup for the try tag
@@ -964,7 +1165,7 @@
             Gets the executable path.
             </summary>
         </member>
-        <member name="M:ABB.SrcML.SrcMLRunner.#ctor(System.String,System.String,System.Collections.ObjectModel.Collection{System.String})">
+        <member name="M:ABB.SrcML.SrcMLRunner.#ctor(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
             Initializes a new instance of the <see cref="T:ABB.SrcML.SrcMLRunner"/> class.
             </summary>
@@ -1034,7 +1235,7 @@
             </summary>
             <param name="applicationDirectory">The application directory.</param>
         </member>
-        <member name="M:ABB.SrcML.Src2SrcMLRunner.#ctor(System.String,System.Collections.ObjectModel.Collection{System.String})">
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.#ctor(System.String,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
             Initializes a new instance of the <see cref="T:ABB.SrcML.Src2SrcMLRunner"/> class.
             </summary>
@@ -1058,7 +1259,7 @@
             <param name="languageFilter">the language to filter on</param>
             <returns>A SrcMLFile that points at <paramref name="xmlFileName"/></returns>
         </member>
-        <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLFromDirectory(System.String,System.String,System.Collections.ObjectModel.Collection{System.String})">
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLFromDirectory(System.String,System.String,System.Collections.Generic.IEnumerable{System.String})">
             <summary>
             Generates a SrcML document from the given path and place it in the XML file. The XML document will only contain files not present in <paramref name="filesToExclude"/>
             </summary>
@@ -1077,6 +1278,24 @@
             <param name="filesToExclude">A collection of files to exclude from <paramref name="xmlFileName"/></param>
             <param name="languageFilter">the language to filter on</param>
             <returns>A SrcMLFile that points at <paramref name="xmlFileName"/></returns>
+        </member>
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLAndXElementFromFile(System.String,System.String)">
+            <summary>
+            Added by JZ on 12/4/2012
+            Generate both a SrcML XElement and document from a single source file. The language will be inferred from the extension.
+            </summary>
+            <param name="sourceFileName">path to the source file to convert.</param>
+            <param name="xmlFileName">The File name to write the resulting XML to.</param>
+            <returns>An XElement representing the source.</returns>
+        </member>
+        <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLAndStringFromFile(System.String,System.String)">
+            <summary>
+            Added by JZ on 12/3/2012
+            Generate both a SrcML string and document from a single source file. The language will be inferred from the extension.
+            </summary>
+            <param name="sourceFileName">path to the source file to convert.</param>
+            <param name="xmlFileName">The File name to write the resulting XML to.</param>
+            <returns>An XML string representing the source.</returns>
         </member>
         <member name="M:ABB.SrcML.Src2SrcMLRunner.GenerateSrcMLFromFile(System.String,System.String)">
             <summary>
@@ -1124,8 +1343,7 @@
             Generate SrcML from a given string of source code.
             </summary>
             <param name="source">A string containing the source code to parse.</param>
-            <param name="language">The source language to use (C,C++,Java,AspectJ).
-            If the source languageFilter is either not in this list or is null, the default source language (C++) will be used.</param>
+            <param name="language">The language to parse the string as. Language.Any is not valid.</param>
             <returns>XML representing the source.</returns>
         </member>
         <member name="T:ABB.SrcML.SrcML">
@@ -1397,6 +1615,129 @@
             <param name="outputFileName">Name of the output file.</param>
             <param name="unitIndex">Index of the unit.</param>
         </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(ABB.SrcML.IFileMonitor,System.String)">
+            <summary>
+            Creates a new SrcMLArchive.
+            </summary>
+            <param name="fileMonitor">An IFileMonitor to indicate which files to convert to SrcML.</param>
+            <param name="xmlDirectory">The directory to store the SrcML files in.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(ABB.SrcML.IFileMonitor,System.String,System.Boolean)">
+            <summary>
+            Creates a new SrcMLArchive.
+            </summary>
+            <param name="fileMonitor">An IFileMonitor to indicate which files to convert to SrcML.</param>
+            <param name="xmlDirectory">The directory to store the SrcML files in.</param>
+            <param name="useExistingSrcML">If True, any existing SrcML files in <paramref name="xmlDirectory"/> will be used. If False, these files will be deleted and potentially recreated.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(ABB.SrcML.IFileMonitor,System.String,ABB.SrcML.SrcMLGenerator)">
+            <summary>
+            Creates a new SrcMLArchive.
+            </summary>
+            <param name="fileMonitor">An IFileMonitor to indicate which files to convert to SrcML.</param>
+            <param name="xmlDirectory">The directory to store the SrcML files in.</param>
+            <param name="generator">The SrcMLGenerator to use to convert source files to SrcML.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.#ctor(ABB.SrcML.IFileMonitor,System.String,System.Boolean,ABB.SrcML.SrcMLGenerator)">
+            <summary>
+            Creates a new SrcMLArchive.
+            </summary>
+            <param name="fileMonitor">An IFileMonitor to indicate which files to convert to SrcML.</param>
+            <param name="xmlDirectory">The directory to store the SrcML files in.</param>
+            <param name="useExistingSrcML">If True, any existing SrcML files in <paramref name="xmlDirectory"/> will be used. If False, these files will be deleted and potentially recreated.</param>
+            <param name="generator">The SrcMLGenerator to use to convert source files to SrcML.</param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive._runStartupInBackground_DoWork(System.Object,System.ComponentModel.DoWorkEventArgs)">
+            <summary>
+            Run in background when starting up the solution.
+            </summary>
+            <param name="sender"></param>
+            <param name="anEvent"></param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.GetAllSrcMLedFiles">
+            <summary>
+            Get all "SrcMLed" files in this solution.
+            TODO: maybe use KeyValuePairs instead of List for better performance
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.ProcessSingleSourceFile(System.String)">
+            <summary>
+            Process a single source file to add or change the corresponding srcML file, or do nothing.
+            TODO: GetXmlPathForSourcePath() twice
+            PROBLEM: cannot generate index in Sando for .txt, .xml etc files.  Have to raise solution monitor events too.
+            </summary>
+            <param name="sourceFilePath"></param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.IsValidFileExtension(System.String)">
+            <summary>
+            Check if the file extension is in the set of file types that can be processed by SrcML.NET.
+            </summary>
+            <param name="filePath">The file name to check.</param>
+            <returns>True if the file can be converted to SrcML; False otherwise.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.RespondToFileEvent(System.Object,ABB.SrcML.FileEventRaisedArgs)">
+            <summary>
+            Respond to an event raised from Solution Monitor. Then raise a new event to client application (e.g., Sando)
+            </summary>
+            <param name="sender"></param>
+            <param name="eventArgs"></param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.GenerateXmlAndXElementForSource(System.String)">
+            <summary>
+            Generate both a srcML File and a XElement of the content of this file for a source code file.
+            </summary>
+            <param name="sourcePath">The full path of the source code file.</param>
+            <returns>The XElement of the content of the generated srcML file.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.GenerateXmlAndStringForSource(System.String)">
+            <summary>
+            Generate both a srcML File and a string of the content of this file for a source code file.
+            </summary>
+            <param name="sourcePath">The full path of the source code file.</param>
+            <returns>The string of the content of the generated srcML file.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.GenerateXmlForSource(System.String)">
+            <summary>
+            Generate a srcML File for a source code file. Now use this method instead of GenerateXmlAndXElementForSource()
+            </summary>
+            <param name="sourcePath"></param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.DeleteXmlForSourceFile(System.String)">
+            <summary>
+            Delete the srcML file for a specified source file.
+            </summary>
+            <param name="sourcePath"></param>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.GetXmlPathForSourcePath(System.String)">
+            <summary>
+            Get the corresponding srcML file path for a specific source file.
+            For single folder storage algorithm
+            </summary>
+            <param name="sourcePath"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.GetSourcePathForXmlPath(System.String)">
+            <summary>
+            Get the corresponding source file path for a specific srcML file.
+            For single folder storage algorithm
+            </summary>
+            <param name="xmlPath"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.GetXElementForSourceFile(System.String)">
+            <summary>
+            Gets the XElement for the specified source file. If the SrcML does not already exist in the archive, it will be created.
+            </summary>
+            <param name="sourceFilePath">The source file to get the root XElement for.</param>
+            <returns>The root XElement of the source file.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLArchive.OnSourceFileChanged(ABB.SrcML.FileEventRaisedArgs)">
+            <summary>
+            Raise a SrcML.NET event (SourceFileAdded, SourceFileChanged, SourceFileDeleted, SourceFileRenamed)
+            </summary>
+            <param name="e"></param>
+        </member>
         <member name="T:ABB.SrcML.SrcMLElement">
             <summary>
             Contains static utility methods that act upon srcML XElements.
@@ -1408,6 +1749,15 @@
             </summary>
             <param name="methodElement">The srcML method element to extract the signature from.</param>
             <returns>The method signature</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLElement.GetLanguageForUnit(System.Xml.Linq.XElement)">
+            <summary>
+            Gets the language for a unit element.
+            
+            It throws an exception if the element is not a unit, has no language, or the language is invalid. <see cref="T:ABB.SrcML.Language"/>
+            </summary>
+            <param name="fileUnit">The file unit to get the language for</param>
+            <returns>The language</returns>
         </member>
         <member name="T:ABB.SrcML.SrcMLException">
             <summary>
@@ -1463,13 +1813,6 @@
             <param name="other">The second SrcML File to merge with.</param>
             <param name="outputFileName">The path to write the resulting SrcMLFile to.</param>
             <returns>The newly merged SrcMLFile.</returns>
-        </member>
-        <member name="M:ABB.SrcML.SrcMLFile.GetPathForUnit(System.Xml.Linq.XElement)">
-            <summary>
-            Get the full path to the unit as specified by either Path.Combine(dir,filename) or filename (if dir is null)
-            </summary>
-            <param name="unit">the unit to find the path for</param>
-            <returns>the path to the unit</returns>
         </member>
         <member name="M:ABB.SrcML.SrcMLFile.RelativePath(System.Xml.Linq.XNode)">
             <summary>
@@ -1528,13 +1871,6 @@
             <seealso cref="M:ABB.SrcML.SrcMLFile.Write(System.String)"/>
             </summary>
         </member>
-        <member name="M:ABB.SrcML.SrcMLFile.ExportSource">
-            <summary>
-            Exports all of the source code contained in the SrcML Document back to disk.
-            <para>The entire directory structure is recreated and placed in <see cref="P:ABB.SrcML.SrcMLFile.ProjectDirectory"/>.</para>
-            </summary>
-            <returns>A list of file names that could not be written.</returns>
-        </member>
         <member name="M:ABB.SrcML.SrcMLFile.IndexOfUnit(System.String)">
             <summary>
             Gets the index number of a given filename from the SrcML document.
@@ -1542,6 +1878,13 @@
             </summary>
             <param name="fileName">The filename to get an index for.</param>
             <returns>the index of the file. -1 if not found.</returns>
+        </member>
+        <member name="M:ABB.SrcML.SrcMLFile.GetXMLString">
+            <summary>
+            Added by JZ on 12/3/2012
+            Read the srcML file and generate a string of the content of this file.
+            </summary>
+            <returns>The string of the content of this file.</returns>
         </member>
         <member name="P:ABB.SrcML.SrcMLFile.ProjectDirectory">
             <summary>
@@ -1750,6 +2093,19 @@
             <param name="transform">The transform containing the <see cref="M:ABB.SrcML.ITransform.Transform(System.Xml.Linq.XElement)"/>.</param>
             <returns>The list of transformed nodes.</returns>
         </member>
+        <member name="M:ABB.SrcML.Utilities.Base32.ToBase32String(System.Byte[])">
+            <summary>
+            Converts an array of bytes to a Base32-k string.
+            </summary>
+        </member>
+        <member name="M:ABB.SrcML.Utilities.Base32.FromBase32String(System.String)">
+            <summary>
+            Converts a Base32-k string into an array of bytes.
+            </summary>
+            <exception cref="T:System.ArgumentException">
+            Input string <paramref name="s">s</paramref> contains invalid Base32-k characters.
+            </exception>
+        </member>
         <member name="T:ABB.SrcML.Utilities.DefaultsDictionary`2">
             <summary>
             DefaultsDictionary is a dictionary that starts with a list of default keys and values.
@@ -1923,9 +2279,10 @@
         <member name="M:ABB.SrcML.Utilities.KsuAdapter.ConvertMappingToString(System.Collections.Generic.IDictionary{System.String,ABB.SrcML.Language})">
             <summary>
             Converts an extension mapping dictionary to a string that can be passed to src2srcml.exe.
+            If the extensions begin with a dot, these are stripped to conform with src2srcml.exe's input format.
             </summary>
             <param name="extensionMapping">An extension mapping dictionary</param>
-            <returns>a comma separated list of mappings of the form ("EXT=LANG")</returns>
+            <returns>A comma separated list of mappings of the form ("EXT=LANG").</returns>
         </member>
         <member name="T:ABB.SrcML.Utilities.ReadOnlyDictionary`2">
             <summary>
