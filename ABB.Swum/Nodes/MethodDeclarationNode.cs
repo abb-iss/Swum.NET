@@ -282,7 +282,7 @@ namespace ABB.Swum.Nodes {
         /// <param name="phrase1">The first phrase.</param>
         /// <param name="phrase2">The second phrase.</param>
         public void CreateThemeFromPhrases(PhraseNode phrase1, PhraseNode phrase2) {
-            if(phrase1 != null) {
+            if(phrase1 != null && !phrase1.IsEmpty()) {
                 phrase1.Add(phrase2);
                 this.Theme = phrase1;
             } else {
