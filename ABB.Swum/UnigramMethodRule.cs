@@ -291,8 +291,10 @@ namespace ABB.Swum
         private int CheckForIgnorableVerb(PhraseNode parsedName, int wordIndex)
         {
             if (wordIndex < parsedName.Size() - 1 //make sure last word in name is verb
-                && PosData.IsIgnorableVerb(parsedName[wordIndex].Text)
-                && PositionalFrequencies.GetVerbProbability(parsedName[wordIndex + 1].Text) > PositionalFrequencies.GetNounProbability(parsedName[wordIndex + 1].Text))
+                && (PosData.IsIgnorableVerb(parsedName[wordIndex].Text)
+                    && (PositionalFrequencies.GetVerbProbability(parsedName[wordIndex + 1].Text) > PositionalFrequencies.GetNounProbability(parsedName[wordIndex + 1].Text))
+                    || PosData.IsModalVerb(parsedName[wordIndex].Text))
+                )
             {
                 parsedName[wordIndex].Tag = PartOfSpeechTag.VerbIgnorable;
                 wordIndex++;

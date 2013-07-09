@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<unit xmlns="http://www.sdml.info/srcML/src" xmlns:cpp="http://www.sdml.info/srcML/cpp" xmlns:lit="http://www.sdml.info/srcML/literal" xmlns:op="http://www.sdml.info/srcML/operator" xmlns:type="http://www.sdml.info/srcML/modifier" xmlns:pos="http://www.sdml.info/srcML/position" language="C++" filename="CanHandle.cpp" pos:tabs="8"><function><type><name pos:line="1" pos:column="1">int</name></type> <name><name pos:line="1" pos:column="5">ToolBarXmlHandlerEx</name><op:operator pos:line="1" pos:column="24">::</op:operator><name pos:line="1" pos:column="26">CanHandle</name></name><parameter_list pos:line="1" pos:column="35">(<param><decl><type><name pos:line="1" pos:column="36">wxXmlNode</name> <type:modifier pos:line="1" pos:column="46">*</type:modifier></type><name pos:line="1" pos:column="47">node</name></decl></param>)</parameter_list> <block pos:line="1" pos:column="53">{
+	<return pos:line="2" pos:column="9">return <expr><lit:literal type="number" pos:line="2" pos:column="16">0</lit:literal></expr>;</return>
+}</block></function>
+</unit>

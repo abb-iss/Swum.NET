@@ -28,7 +28,7 @@ namespace ABB.Swum.Tests {
             fileUnitSetup = new SrcMLFileUnitSetup(Language.CPlusPlus);
             builder = new UnigramSwumBuilder();
         }
-
+        
         [Test]
         public void TestLeadingPrepositionRule_OnGetAccObject() {
             var xml = @"<function><type><name>LRESULT</name></type> <name><name>CMenuContainer</name><op:operator>::</op:operator><name>OnGetAccObject</name></name><parameter_list>( <param><decl><type><name>UINT</name></type> <name>uMsg</name></decl></param>, <param><decl><type><name>WPARAM</name></type> <name>wParam</name></decl></param>, <param><decl><type><name>LPARAM</name></type> <name>lParam</name></decl></param>, <param><decl><type><name>BOOL</name><type:modifier>&amp;</type:modifier></type> <name>bHandled</name></decl></param> )</parameter_list> <block>{
@@ -52,7 +52,20 @@ namespace ABB.Swum.Tests {
         }
 
         [Test]
-        public void TestMethod1() {
+        public void TestModalVerb() {
+            var xml = @"<function><type><name>int</name></type> <name><name>ToolBarXmlHandlerEx</name><op:operator>::</op:operator><name>CanHandle</name></name><parameter_list>(<param><decl><type><name>wxXmlNode</name> <type:modifier>*</type:modifier></type><name>node</name></decl></param>)</parameter_list> <block>{
+	<return>return <expr><lit:literal type=""number"">0</lit:literal></expr>;</return>
+}</block></function>";
+            var unit = fileUnitSetup.GetFileUnitForXmlSnippet(xml, "test.cpp");
+
+            var func = unit.Descendants(SRC.Function).First();
+            var mdn = new MethodDeclarationNode(SrcMLHelper.GetNameForMethod(func).Value, ContextBuilder.BuildMethodContext(func));
+            builder.ApplyRules(mdn);
+
+            Assert.AreEqual(typeof(CheckerRule), mdn.SwumRuleUsed.GetType());
+            var expected = @"Can(VerbIgnorable) Handle(VerbIgnorable) | [wx(NounModifier) Xml(NounModifier) Node(NounIgnorable) - node(Unknown)]
+	 ++ Tool(NounModifier) Bar(NounModifier) Xml(NounModifier) Handler(NounModifier) Ex(Noun) ++ int(Noun)";
+            Assert.AreEqual(expected, mdn.ToString());
         }
     }
 }
