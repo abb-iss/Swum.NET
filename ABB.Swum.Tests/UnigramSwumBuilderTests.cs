@@ -67,5 +67,22 @@ namespace ABB.Swum.Tests {
 	 ++ Tool(NounModifier) Bar(NounModifier) Xml(NounModifier) Handler(NounModifier) Ex(Noun) ++ int(Noun)";
             Assert.AreEqual(expected, mdn.ToString());
         }
+
+        [Test]
+        public void TestNounPhraseRule_KeyFileExists() {
+            var xml = @"<function><type><name>bool</name></type> <name><name>COptionsPageConnectionSFTP</name><op:operator>::</op:operator><name>KeyFileExists</name></name><parameter_list>(<param><decl><type><name>const</name> <name>wxString</name><type:modifier>&amp;</type:modifier></type> <name>keyFile</name></decl></param>)</parameter_list> <block>{
+	<return>return <expr><lit:literal type=""boolean"">true</lit:literal></expr>;</return>
+}</block></function>";
+            var unit = fileUnitSetup.GetFileUnitForXmlSnippet(xml, "test.cpp");
+
+            var func = unit.Descendants(SRC.Function).First();
+            var mdn = new MethodDeclarationNode(SrcMLHelper.GetNameForMethod(func).Value, ContextBuilder.BuildMethodContext(func));
+            builder.ApplyRules(mdn);
+
+            Assert.AreEqual(typeof(NounPhraseRule), mdn.SwumRuleUsed.GetType());
+            var expected = @"get(Verb) | Key(NounModifier) File(NounModifier) Exists(Noun)
+	 ++ [wx(NounModifier) String(NounIgnorable) - key(Unknown) File(Unknown)] ++ C(NounModifier) Options(NounModifier) Page(NounModifier) Connection(NounModifier) SFTP(Noun)";
+            Assert.AreEqual(expected, mdn.ToString());
+        }
     }
 }

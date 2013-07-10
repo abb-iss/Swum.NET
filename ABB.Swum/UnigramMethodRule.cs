@@ -133,38 +133,28 @@ namespace ABB.Swum
         /// <summary>
         /// Sets the member data sets to their default states.
         /// </summary>
-        private void InitializeMembers()
-        {
+        private void InitializeMembers() {
             string specialWordsFile = SwumConfiguration.GetFileSetting("UnigramMethodRule.SpecialWordsFile");
-            if (specialWordsFile != null)
-            {
-                this.SpecialWords = LibFileLoader.ReadWordList(specialWordsFile);
-            }
-            else
-            {
-                this.SpecialWords = new HashSet<string>();
+            if(specialWordsFile != null) {
+                this.SpecialWords = new HashSet<string>(LibFileLoader.ReadWordList(specialWordsFile), StringComparer.InvariantCultureIgnoreCase);
+            } else {
+                this.SpecialWords = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
                 Console.Error.WriteLine("UnigramMethodRule.SpecialWordsFile not specified in config file.");
             }
 
             string booleanArgumentVerbsFile = SwumConfiguration.GetFileSetting("UnigramMethodRule.BooleanArgumentVerbsFile");
-            if (booleanArgumentVerbsFile != null)
-            {
-                this.BooleanArgumentVerbs = LibFileLoader.ReadWordList(booleanArgumentVerbsFile);
-            }
-            else
-            {
-                this.BooleanArgumentVerbs = new HashSet<string>();
+            if(booleanArgumentVerbsFile != null) {
+                this.BooleanArgumentVerbs = new HashSet<string>(LibFileLoader.ReadWordList(booleanArgumentVerbsFile), StringComparer.InvariantCultureIgnoreCase);
+            } else {
+                this.BooleanArgumentVerbs = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
                 Console.Error.WriteLine("UnigramMethodRule.BooleanArgumentVerbsFile not specified in config file.");
             }
 
             string nounPhraseIndicatorsFile = SwumConfiguration.GetFileSetting("UnigramMethodRule.NounPhraseIndicatorsFile");
-            if (nounPhraseIndicatorsFile != null)
-            {
-                this.NounPhraseIndicators = LibFileLoader.ReadWordList(nounPhraseIndicatorsFile);
-            }
-            else
-            {
-                this.NounPhraseIndicators = new HashSet<string>();
+            if(nounPhraseIndicatorsFile != null) {
+                this.NounPhraseIndicators = new HashSet<string>(LibFileLoader.ReadWordList(nounPhraseIndicatorsFile), StringComparer.InvariantCultureIgnoreCase);
+            } else {
+                this.NounPhraseIndicators = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase);
                 Console.Error.WriteLine("UnigramMethodRule.NounPhraseIndicatorsFile not specified in config file.");
             }
 
