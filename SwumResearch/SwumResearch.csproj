@@ -78,8 +78,8 @@
     <Reference Include="ABB.SrcML">
       <HintPath>..\External\SrcML\ABB.SrcML.dll</HintPath>
     </Reference>
-    <Reference Include="ABB.SrcML.Data">
-      <HintPath>..\External\SrcML\ABB.SrcML.Data.dll</HintPath>
+    <Reference Include="ABB.SrcML.Core">
+      <HintPath>..\External\SrcML\ABB.SrcML.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

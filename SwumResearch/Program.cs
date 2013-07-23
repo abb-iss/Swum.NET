@@ -60,10 +60,10 @@ namespace SwumResearch
             {
                 c = new AnalyzeFunctionsCommand();
             }
-            else if (string.Equals(args[0], "CountProgramWords", StringComparison.InvariantCultureIgnoreCase))
-            {
-                c = new CountProgramWordsCommand();
-            }
+            //else if (string.Equals(args[0], "CountProgramWords", StringComparison.InvariantCultureIgnoreCase))
+            //{
+            //    c = new CountProgramWordsCommand();
+            //}
             else if (string.Equals(args[0], "Random", StringComparison.InvariantCultureIgnoreCase))
             {
                 c = new RandomCommand();
@@ -103,7 +103,7 @@ namespace SwumResearch
             cl.Add(new ScratchCommand());
             cl.Add(new GetIdentifiersCommand());
             cl.Add(new AnalyzeFunctionsCommand());
-            cl.Add(new CountProgramWordsCommand());
+            //cl.Add(new CountProgramWordsCommand());
             cl.Add(new RandomCommand());
             cl.Add(new SwumCommand());
             CommandLineParser.PrintCommands(cl);
@@ -345,7 +345,7 @@ namespace SwumResearch
                                       where functionTypes.Any(c => c == func.Name)
                                       select func))
                 {
-                    string funcName = SrcMLHelper.GetNameForMethod(func).Value;
+                    string funcName = SrcMLElement.GetNameForMethod(func).Value;
                     if (IsSameCase(funcName))
                     {
                         sameCaseWords.Add(funcName);
@@ -464,7 +464,7 @@ namespace SwumResearch
                                       where functionTypes.Any(c => c == func.Name) && !func.Ancestors(SRC.Declaration).Any() && (rand.Next(100) < this.SamplePercent)
                                       select func))
                 {
-                    string funcName = SrcMLHelper.GetNameForMethod(func).Value;
+                    string funcName = SrcMLElement.GetNameForMethod(func).Value;
                     Console.WriteLine("<{0}> {1}", func.Name.LocalName, GetMethodSignature(func));
 
                     MethodDeclarationNode mdn = new MethodDeclarationNode(funcName, ContextBuilder.BuildMethodContext(func));
@@ -496,23 +496,24 @@ namespace SwumResearch
         }
     }
 
-    [Description("Counts the occurrences of words in program identifiers")]
-    class CountProgramWordsCommand : Command
-    {
-        [Required]
-        [Description("The srcML file to read from.")]
-        public string File { get; set; }
+    //[Description("Counts the occurrences of words in program identifiers")]
+    //class CountProgramWordsCommand : Command
+    //{
+    //    [Required]
+    //    [Description("The srcML file to read from.")]
+    //    public string File { get; set; }
 
-        [Required]
-        [Description("The file to write the output to.")]
-        public string OutFile { get; set; }
+    //    [Required]
+    //    [Description("The file to write the output to.")]
+    //    public string OutFile { get; set; }
 
-        public override void Execute()
-        {
-            var obs = SamuraiIdSplitter.CountProgramWords(File);
-            LibFileLoader.WriteWordCount(obs, OutFile);
-        }
-    }
+    //    public override void Execute()
+    //    {
+    //        var archive = new SrcMLFile(File);
+    //        var obs = SamuraiIdSplitter.CountProgramWords(archive);
+    //        LibFileLoader.WriteWordCount(obs, OutFile);
+    //    }
+    //}
 
     [Description("Generates a sequence of random numbers")]
     class RandomCommand : Command
@@ -587,7 +588,7 @@ namespace SwumResearch
                     foreach(var func in (from func in file.Descendants()
                                          where functionTypes.Contains(func.Name) && !func.Ancestors(SRC.Declaration).Any()
                                          select func)) {
-                        var nameElement = SrcMLHelper.GetNameForMethod(func);
+                        var nameElement = SrcMLElement.GetNameForMethod(func);
                         if(nameElement != null) {
                             string funcName = nameElement.Value;
                             string funcSignature = SrcMLElement.GetMethodSignature(func);

@@ -297,26 +297,26 @@ namespace ABB.Swum
         }
 
         /// <summary>
-        /// Counts the number of occurrences of words within the identifiers in the supplied srcML file
+        /// Counts the number of occurrences of words within the identifiers in the given srcml files.
         /// </summary>
-        /// <param name="path">The srcML file to analyze. This can be either a compound or singular srcML file.</param>
-        /// <returns>A dictionary mapping words to the number of occurrences with the file's identifiers.</returns>
-        public static Dictionary<string,int> CountProgramWords(string path)
+        /// <param name="archive">An archive containing the srcml files to analyze.</param>
+        /// <returns>A dictionary mapping words to the number of occurrences within identifiers.</returns>
+        public static Dictionary<string,int> CountProgramWords(ISrcMLArchive archive)
         {
-            ConservativeIdSplitter splitter = new ConservativeIdSplitter();
-
-            //XElement root = XElement.Load(path);
-            Dictionary<string, int> observations = new Dictionary<string, int>();
-
-            SrcMLFile file = new SrcMLFile(path);
-            foreach (var fileUnit in file.FileUnits)
+            if(archive == null) {
+                throw new ArgumentNullException("archive");
+            }
+            
+            var splitter = new ConservativeIdSplitter();
+            var observations = new Dictionary<string, int>();
+            foreach (var fileUnit in archive.FileUnits)
             {
                 //query for all the identifiers
                 var identifiers = from id in fileUnit.Descendants(SRC.Name)
-                                  where id.Elements().Count() == 0
+                                  where !id.Elements().Any()
                                   select id.Value;
 
-                foreach (string id in identifiers)
+                foreach (var id in identifiers)
                 {
                     string[] words = splitter.Split(id);
                     foreach (string word in words)

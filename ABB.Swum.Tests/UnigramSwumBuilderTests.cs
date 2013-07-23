@@ -42,7 +42,7 @@ namespace ABB.Swum.Tests {
             var unit = fileUnitSetup.GetFileUnitForXmlSnippet(xml, "test.cpp");
 
             var func = unit.Descendants(SRC.Function).First();
-            var mdn = new MethodDeclarationNode(SrcMLHelper.GetNameForMethod(func).Value, ContextBuilder.BuildMethodContext(func));
+            var mdn = new MethodDeclarationNode(SrcMLElement.GetNameForMethod(func).Value, ContextBuilder.BuildMethodContext(func));
             builder.ApplyRules(mdn);
 
             Assert.AreEqual(typeof(LeadingPrepositionRule), mdn.SwumRuleUsed.GetType());
@@ -59,7 +59,7 @@ namespace ABB.Swum.Tests {
             var unit = fileUnitSetup.GetFileUnitForXmlSnippet(xml, "test.cpp");
 
             var func = unit.Descendants(SRC.Function).First();
-            var mdn = new MethodDeclarationNode(SrcMLHelper.GetNameForMethod(func).Value, ContextBuilder.BuildMethodContext(func));
+            var mdn = new MethodDeclarationNode(SrcMLElement.GetNameForMethod(func).Value, ContextBuilder.BuildMethodContext(func));
             builder.ApplyRules(mdn);
 
             Assert.AreEqual(typeof(CheckerRule), mdn.SwumRuleUsed.GetType());
@@ -76,7 +76,7 @@ namespace ABB.Swum.Tests {
             var unit = fileUnitSetup.GetFileUnitForXmlSnippet(xml, "test.cpp");
 
             var func = unit.Descendants(SRC.Function).First();
-            var mdn = new MethodDeclarationNode(SrcMLHelper.GetNameForMethod(func).Value, ContextBuilder.BuildMethodContext(func));
+            var mdn = new MethodDeclarationNode(SrcMLElement.GetNameForMethod(func).Value, ContextBuilder.BuildMethodContext(func));
             builder.ApplyRules(mdn);
 
             Assert.AreEqual(typeof(NounPhraseRule), mdn.SwumRuleUsed.GetType());

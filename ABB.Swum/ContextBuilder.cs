@@ -17,7 +17,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Diagnostics;
 using ABB.SrcML;
-using ABB.SrcML.Data;
+
 
 namespace ABB.Swum
 {
@@ -161,7 +161,7 @@ namespace ABB.Swum
             }
 
             //Determine declaring class
-            XElement classNameTag = SrcMLHelper.GetClassNameForMethod(methodTag);
+            XElement classNameTag = SrcMLElement.GetClassNameForMethod(methodTag);
             if (classNameTag != null)
             {
                 //class name listed with method name: <ClassName>::<MethodName>
@@ -171,7 +171,7 @@ namespace ABB.Swum
             {
                 //class name not listed, but the method is a constructor
                 //I'm not sure if this is actually possible
-                mc.DeclaringClass = SrcMLHelper.GetNameForMethod(methodTag).Value;
+                mc.DeclaringClass = SrcMLElement.GetNameForMethod(methodTag).Value;
             }
             else if (classNameTag == null)
             {
@@ -187,80 +187,80 @@ namespace ABB.Swum
             return mc;
         }
 
-        /// <summary>
-        /// Creates a MethodContext object based on the given srcML call element.
-        /// </summary>
-        /// <param name="callElement">The srcML Call element to create the context from.</param>
-        /// <param name="srcDb">A SrcMLDataContext database built on the srcML file that <paramref name="callElement"/> is part of.</param>
-        /// <returns>A MethodContext object based on <paramref name="callElement"/>.</returns>
-        /// <exception cref="System.ArgumentNullException"><paramref name="callElement"/> is null.</exception>
-        /// <exception cref="System.ArgumentException"><paramref name="callElement"/> is not a Call element.</exception>
-        /// <exception cref="System.ArgumentNullException"><paramref name="srcDb"/> is null.</exception>
-        public static MethodContext BuildMethodContextFromCall(XElement callElement, SrcMLDataContext srcDb) {
-            if(callElement == null) { throw new ArgumentNullException("callElement"); }
-            if(callElement.Name != SRC.Call) { throw new ArgumentException("Passed element not a Call element.", "callElement"); }
-            if(srcDb == null) { throw new ArgumentNullException("srcDb"); }
+        ///// <summary>
+        ///// Creates a MethodContext object based on the given srcML call element.
+        ///// </summary>
+        ///// <param name="callElement">The srcML Call element to create the context from.</param>
+        ///// <param name="srcDb">A SrcMLDataContext database built on the srcML file that <paramref name="callElement"/> is part of.</param>
+        ///// <returns>A MethodContext object based on <paramref name="callElement"/>.</returns>
+        ///// <exception cref="System.ArgumentNullException"><paramref name="callElement"/> is null.</exception>
+        ///// <exception cref="System.ArgumentException"><paramref name="callElement"/> is not a Call element.</exception>
+        ///// <exception cref="System.ArgumentNullException"><paramref name="srcDb"/> is null.</exception>
+        //public static MethodContext BuildMethodContextFromCall(XElement callElement, SrcMLDataContext srcDb) {
+        //    if(callElement == null) { throw new ArgumentNullException("callElement"); }
+        //    if(callElement.Name != SRC.Call) { throw new ArgumentException("Passed element not a Call element.", "callElement"); }
+        //    if(srcDb == null) { throw new ArgumentNullException("srcDb"); }
             
-            //Process parameters
-            List<FormalParameterRecord> args = new List<FormalParameterRecord>();
-            foreach(XElement argument in callElement.Element(SRC.ArgumentList).Elements(SRC.Argument)) {
-                string argType = "int"; //default assumption for unknown types
-                bool primitiveArg = true;
-                var expr = argument.Element(SRC.Expression);
-                if(expr != null) {
-                    var exprElements = expr.Elements().ToList();
-                    if(exprElements.Count() == 1 && exprElements[0].Name == SRC.Name) {
-                        //variable
-                        var varDecl = srcDb.GetDeclarationForVariableName(exprElements[0]);
-                        if(varDecl != null) {
-                            argType = varDecl.VariableTypeName;
-                            primitiveArg = primitiveTypes.Contains(argType);
-                        }
-                    } else if(exprElements.Count() == 1 && exprElements[0].Name == LIT.Literal) {
-                        var typeAttr = exprElements[0].Attribute("type");
-                        if(typeAttr != null && typeAttr.Value == "string") {
-                            //string literal
-                            argType = "char*";
-                            primitiveArg = true;
-                        } else if(typeAttr != null && typeAttr.Value == "number") {
-                            //number literal, assume it's an integer
-                            argType = "int";
-                            primitiveArg = true;
-                        }
-                    } else if(exprElements.Count() == 1 && exprElements[0].Name == SRC.Call) {
-                        //method call
-                        var md = srcDb.GetDefinitionForMethodCall(exprElements[0]);
-                        if(md != null) {
-                            argType = md.MethodReturnTypeName;
-                            primitiveArg = primitiveTypes.Contains(argType);
-                        } else {
-                            //undefined method, assume to return int
-                            argType = "int";
-                            primitiveArg = true;
-                        }
-                    } else {
-                        //found an actual expression
-                        //don't bother trying to evaluate it, just ignore
-                        argType = "int";
-                        primitiveArg = true;
-                    }
-                } else {
-                    Console.WriteLine("Found <argument> without child <expr>: {0}", callElement.ToString());
-                    //add empty arg to list
-                    argType = "int";
-                    primitiveArg = true;
-                }
-                args.Add(new FormalParameterRecord(argType, primitiveArg, string.Empty));
-            }
+        //    //Process parameters
+        //    List<FormalParameterRecord> args = new List<FormalParameterRecord>();
+        //    foreach(XElement argument in callElement.Element(SRC.ArgumentList).Elements(SRC.Argument)) {
+        //        string argType = "int"; //default assumption for unknown types
+        //        bool primitiveArg = true;
+        //        var expr = argument.Element(SRC.Expression);
+        //        if(expr != null) {
+        //            var exprElements = expr.Elements().ToList();
+        //            if(exprElements.Count() == 1 && exprElements[0].Name == SRC.Name) {
+        //                //variable
+        //                var varDecl = srcDb.GetDeclarationForVariableName(exprElements[0]);
+        //                if(varDecl != null) {
+        //                    argType = varDecl.VariableTypeName;
+        //                    primitiveArg = primitiveTypes.Contains(argType);
+        //                }
+        //            } else if(exprElements.Count() == 1 && exprElements[0].Name == LIT.Literal) {
+        //                var typeAttr = exprElements[0].Attribute("type");
+        //                if(typeAttr != null && typeAttr.Value == "string") {
+        //                    //string literal
+        //                    argType = "char*";
+        //                    primitiveArg = true;
+        //                } else if(typeAttr != null && typeAttr.Value == "number") {
+        //                    //number literal, assume it's an integer
+        //                    argType = "int";
+        //                    primitiveArg = true;
+        //                }
+        //            } else if(exprElements.Count() == 1 && exprElements[0].Name == SRC.Call) {
+        //                //method call
+        //                var md = srcDb.GetDefinitionForMethodCall(exprElements[0]);
+        //                if(md != null) {
+        //                    argType = md.MethodReturnTypeName;
+        //                    primitiveArg = primitiveTypes.Contains(argType);
+        //                } else {
+        //                    //undefined method, assume to return int
+        //                    argType = "int";
+        //                    primitiveArg = true;
+        //                }
+        //            } else {
+        //                //found an actual expression
+        //                //don't bother trying to evaluate it, just ignore
+        //                argType = "int";
+        //                primitiveArg = true;
+        //            }
+        //        } else {
+        //            Console.WriteLine("Found <argument> without child <expr>: {0}", callElement.ToString());
+        //            //add empty arg to list
+        //            argType = "int";
+        //            primitiveArg = true;
+        //        }
+        //        args.Add(new FormalParameterRecord(argType, primitiveArg, string.Empty));
+        //    }
 
-            //Get declaring class name, if present
-            //If this is present, it will only be a class if calling a static method. Otherwise it's probably a namespace.
-            XElement classNameElement = SrcMLHelper.GetClassNameForMethod(callElement);
-            string className = classNameElement != null ? classNameElement.Value : string.Empty;
-            //TODO: determine other aspects of MethodContext from call site
+        //    //Get declaring class name, if present
+        //    //If this is present, it will only be a class if calling a static method. Otherwise it's probably a namespace.
+        //    XElement classNameElement = SrcMLHelper.GetClassNameForMethod(callElement);
+        //    string className = classNameElement != null ? classNameElement.Value : string.Empty;
+        //    //TODO: determine other aspects of MethodContext from call site
 
-            return new MethodContext("int", true, className, args, false, false, false);
-        }
+        //    return new MethodContext("int", true, className, args, false, false, false);
+        //}
 
         /// <summary>
         /// Extracts the type name from a type srcML element. A type element may contain several name and type modifier elements.
