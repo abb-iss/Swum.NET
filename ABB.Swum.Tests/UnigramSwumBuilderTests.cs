@@ -84,5 +84,18 @@ namespace ABB.Swum.Tests {
 	 ++ [wx(NounModifier) String(NounIgnorable) - key(Unknown) File(Unknown)] ++ C(NounModifier) Options(NounModifier) Page(NounModifier) Connection(NounModifier) SFTP(Noun)";
             Assert.AreEqual(expected, mdn.ToString());
         }
+
+        [Test]
+        public void TestBooleanArgument() {
+            var xml = @"<function><type><name>boolean</name></type> <name><name>Automobile</name><op:operator>::</op:operator><name>HasEmptyGasTank</name></name><parameter_list>(<param><decl><type><name>boolean</name></type> <name>gasTank</name></decl></param>)</parameter_list> <block>{
+	<return>return <expr><lit:literal type=""boolean"">false</lit:literal></expr>;</return>
+}</block></function>";
+            var unit = fileUnitSetup.GetFileUnitForXmlSnippet(xml, "test.cpp");
+
+            var func = unit.Descendants(SRC.Function).First();
+            var mdn = new MethodDeclarationNode(SrcMLElement.GetNameForMethod(func).Value, ContextBuilder.BuildMethodContext(func));
+            builder.ApplyRules(mdn);
+
+        }
     }
 }
