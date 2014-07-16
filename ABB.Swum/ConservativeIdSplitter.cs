@@ -21,6 +21,15 @@ namespace ABB.Swum {
     /// Splits an identifier on non-alphabetic characters and easy camelcase transitions (lowercase to uppercase).
     /// </summary>
     public class ConservativeIdSplitter : IdSplitter {
+        private Regex nonWord = new Regex(@"[^\d\p{L}]", RegexOptions.Compiled);
+
+        private Regex numLet = new Regex(@"(\p{L})(\d)", RegexOptions.Compiled);
+        private Regex numLet2 = new Regex(@"(\d)(\p{L})", RegexOptions.Compiled);
+
+        private Regex lowerUpper = new Regex(@"(\p{Ll})(\p{Lu})", RegexOptions.Compiled);
+
+        private Regex upperLower = new Regex(@"(\p{Lu})(\p{Lu}\p{Ll})", RegexOptions.Compiled);
+ 
 
         /// <summary>
         /// Splits an identifier on non-alphabetic characters and easy camelcase transitions (lowercase to uppercase).
@@ -28,19 +37,22 @@ namespace ABB.Swum {
         /// <param name="identifier">The identifier to split</param>
         /// <returns>An array of the words resulting from splitting the identifier.</returns>
         public override string[] Split(string identifier) {
+
+
+
             //remove any non-word or non-digit characters
-            var id = Regex.Replace(identifier, @"[^\d\p{L}]", " ");
+            var id = nonWord.Replace(identifier, " ");                
 
             //split numbers from letters
-            id = Regex.Replace(id, @"(\p{L})(\d)", "$1 $2");
-            id = Regex.Replace(id, @"(\d)(\p{L})", "$1 $2");
+            id = numLet.Replace(id, "$1 $2");
+            id = numLet2.Replace(id, "$1 $2");
 
             //split lowercase to uppercase
-            id = Regex.Replace(id, @"(\p{Ll})(\p{Lu})", "$1 $2");
+            id = lowerUpper.Replace(id, "$1 $2");
 
             //split uppercase to lowercase
             //final uppercase letter is put with lowercase ones
-            id = Regex.Replace(id, @"(\p{Lu})(\p{Lu}\p{Ll})", "$1 $2");
+            id = upperLower.Replace(id, "$1 $2");
 
 
             return id.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);

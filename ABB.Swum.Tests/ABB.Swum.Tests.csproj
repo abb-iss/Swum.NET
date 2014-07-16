@@ -89,6 +89,7 @@
     <Compile Include="Nodes\MethodDeclarationNodeTests.cs" />
     <Compile Include="Nodes\PhraseNodeTests.cs" />
     <Compile Include="Nodes\WordNodeTests.cs" />
+    <Compile Include="PerformanceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="FieldRuleTests.cs" />
     <Compile Include="SamuraiIdSplitterTests.cs" />

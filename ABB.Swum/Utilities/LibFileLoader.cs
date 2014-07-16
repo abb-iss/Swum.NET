@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using ABB.Swum.WordData;
+using System.Globalization;
 
 namespace ABB.Swum.Utilities
 {
@@ -137,6 +138,7 @@ namespace ABB.Swum.Utilities
         /// <returns>A HashSet containing the words in the file(s).</returns>
         public static HashSet<string> ReadWordList(bool keepOriginalCase, params string[] paths)
         {
+            var culture = CultureInfo.CurrentCulture;
             if (paths == null) throw new ArgumentNullException("paths");
 
             HashSet<string> wordList = new HashSet<string>();
@@ -148,7 +150,7 @@ namespace ABB.Swum.Utilities
                     while (!file.EndOfStream)
                     {
                         word = file.ReadLine().Trim();
-                        if (word != string.Empty && !word.StartsWith("#") && !word.StartsWith("//")) //ignore blank and commented lines
+                        if (word != string.Empty && word[0]!='#' && !(word.Length>=2 && word[0]=='/' && word[1]=='/')) //ignore blank and commented lines
                         {
                             if (keepOriginalCase)
                             {
@@ -156,7 +158,7 @@ namespace ABB.Swum.Utilities
                             }
                             else
                             {
-                                wordList.Add(word.ToLower());
+                                wordList.Add(word.ToLower(culture));
                             }
                         }
                     }
