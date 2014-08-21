@@ -301,7 +301,7 @@ namespace ABB.Swum
         /// </summary>
         /// <param name="archive">An archive containing the srcml files to analyze.</param>
         /// <returns>A dictionary mapping words to the number of occurrences within identifiers.</returns>
-        public static Dictionary<string,int> CountProgramWords(ISrcMLArchive archive)
+        public static Dictionary<string,int> CountProgramWords(SrcMLArchive archive)
         {
             if(archive == null) {
                 throw new ArgumentNullException("archive");

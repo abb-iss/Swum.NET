@@ -40,6 +40,8 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -66,8 +68,11 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ABB.SrcML.Core">
-      <HintPath>..\External\SrcML\ABB.SrcML.Core.dll</HintPath>
+    <Reference Include="ABB.SrcML">
+      <HintPath>..\packages\ABB.SrcML.99.99.410.0\lib\net40\ABB.SrcML.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\packages\log4net.2.0.0\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -196,6 +201,7 @@
     <Content Include="lib\suffixes.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="lib\AJ.txt">
@@ -301,4 +307,11 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
 </Project>
