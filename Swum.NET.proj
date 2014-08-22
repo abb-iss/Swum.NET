@@ -2,6 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <SolutionToBuild Include="Swum.NET.sln" />
+    <NugetExe Include="External\Nuget\nuget.exe" />
     <TestRunner Include="packages\NUnit.Runners.2.6.2\tools\nunit-console.exe" />
     <Configuration Include="Debug;Release" />
     <ExternalFiles Include="External\**\*.*" Exclude="External\MSBuild\**\*.*" />
