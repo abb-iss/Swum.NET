@@ -24,9 +24,6 @@
   <Target Name="Build" Outputs="$(OutDir)\$(Configuration)" DependsOnTargets="CreateAssemblyInfo">
     <MSBuild Projects="@(SolutionToBuild)" Properties="Configuration=$(Configuration);Platform=Any CPU" />
   </Target>
-  <!-- <Target Name="Build" DependsOnTargets="BeforeBuild">
-    <MSBuild Projects="@(SolutionToBuild)" Properties="Configuration=%(Configuration.Identity);Platform=Any CPU" />
-  </Target> -->
 
   <Target Name="CopyExternals">
     <MakeDir Directories="$(OutDir)\External" />
