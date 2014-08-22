@@ -22,8 +22,8 @@ namespace ABB.Swum.Tests
         public void SetUp()
         {
             builder = new UnigramSwumBuilder { Splitter = new CamelIdSplitter() };
-            var Generator = new SrcMLGenerator(@"..\..\..\External\SrcML");
-            var file = Generator.GenerateSrcMLFileFromDirectory(@"..\..\..\", Path.GetTempFileName(), new List<string>(), Language.Any);
+            var Generator = new SrcMLGenerator(@"..\..\External\SrcML");
+            var file = Generator.GenerateSrcMLFileFromDirectory(@"..\..\", Path.GetTempFileName(), new List<string>(), Language.Any);
 
             functions = from func in file.GetXDocument().Descendants()
                             where _functionTypes.Contains(func.Name) && !func.Ancestors(SRC.Declaration).Any()
