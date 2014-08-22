@@ -44,4 +44,8 @@
   <Target Name="Clean">
     <RemoveDir Directories="$(OutDir)\Release;$(OutDir)\Debug;$(OutDir)\External;$(OutDir)" />
   </Target>
+
+  <Target Name="RestorePackages" BeforeTargets="Build;Test">
+    <Exec Command="&quot;$(MSBuildThisFileDirectory)External\NuGet\nuget.exe&quot; restore &quot;%(SolutionToBuild.Identity)&quot;" />
+  </Target>
 </Project>
