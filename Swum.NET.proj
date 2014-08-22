@@ -3,7 +3,7 @@
   <ItemGroup>
     <SolutionToBuild Include="Swum.NET.sln" />
     <NugetExe Include="External\Nuget\nuget.exe" />
-    <TestRunner Include="packages\NUnit.Runners.2.6.2\tools\nunit-console.exe" />
+    <TestRunner Include="packages\NUnit.Runners.2.6.3\tools\nunit-console.exe" />
     <Configuration Include="Debug;Release" />
     <ExternalFiles Include="External\**\*.*" Exclude="External\MSBuild\**\*.*" />
   </ItemGroup>
@@ -35,7 +35,7 @@
   </Target>
 
   <Target Name="Test" DependsOnTargets="Build" Condition="Exists('@(TestRunner)')">
-    <Exec Command="@(TestRunner) ABB.Swum.Tests\bin\$(Configuration)\ABB.Swum.Tests.dll" />
+    <Exec Command="@(TestRunner) $(OutDir)\$(Configuration)\ABB.Swum.Tests.dll" />
   </Target>
   
   <Target Name="CreatePackages" DependsOnTargets="SetNuspecVersion;Build">
